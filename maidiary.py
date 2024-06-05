@@ -110,11 +110,25 @@ def show_diary_page(root):
     bottom_right_frame.pack(side="left",expand=True, fill="both", padx=5, pady=5)
 
     #Creo un frame per ogni valutazione
+    day_val_frame = ctk.CTkFrame(bottom_right_frame, corner_radius=15, fg_color="#D3E3F9")
+    day_val_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
+
+    stress_frame = ctk.CTkFrame(bottom_right_frame, corner_radius=15, fg_color="#D3E3F9")
+    stress_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
+
     satisfaction_frame = ctk.CTkFrame(bottom_right_frame, corner_radius=15, fg_color="#D3E3F9")
     satisfaction_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
 
-    happiness_frame = ctk.CTkFrame(bottom_right_frame, corner_radius=15, fg_color="#D3E3F9")
-    happiness_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
+    mood_frame = ctk.CTkFrame(bottom_right_frame, corner_radius=15, fg_color="#D3E3F9")
+    mood_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
+
+    ph_act_frame = ctk.CTkFrame(bottom_right_frame, corner_radius=15, fg_color="#D3E3F9")
+    ph_act_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
+
+    social_frame = ctk.CTkFrame(bottom_right_frame, corner_radius=15, fg_color="#D3E3F9")
+    social_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
+
+    
 
 
     
@@ -136,21 +150,49 @@ def show_diary_page(root):
     # Area di inserimento del diario
     diary_entry = ctk.CTkTextbox(top_right_frame, border_color="#D3E3F9", corner_radius=15, scrollbar_button_color="#D3E3F9")
     diary_entry.pack(expand=True, fill="both", padx=5, pady=5)
-
-    text_h = tk.StringVar(value="0")
+    
+    text_dv = tk.StringVar(value="0")
+    text_st = tk.StringVar(value="0")
     text_s = tk.StringVar(value="0")
+    text_m = tk.StringVar(value="0")
+    text_pa = tk.StringVar(value="0")
+    text_so = tk.StringVar(value="0")
+    
 
-    text_h.set(f"Felicità: {text_h.get()}")
+    text_dv.set(f"Valutazione giornaliera: {text_dv.get()}")
+    text_st.set(f"Stress: {text_st.get()}")
     text_s.set(f"Soddisfazione: {text_s.get()}")
+    text_m.set(f"Mood: {text_m.get()}")
+    text_pa.set(f"Attività Fisica: {text_pa.get()}")
+    text_so.set(f"Relazioni Sociali: {text_so.get()}")
 
 
     # Funzione per mostrare il valore del cursore della soddisfazione come testo
-    def mostra_h_val(value):
-        text_h.set(f"Felicità: {int(happiness_slider.get())}")
+    def mostra_dv_val(value):
+        day_val_label.set(f"Valutazione giornaliera: {int(day_val_slider.get())}")
+
+    def mostra_st_val(value):
+        text_st.set(f"Stress: {int(stress_slider.get())}")
 
     def mostra_s_val(value):
         text_s.set(f"Soddisfazione: {int(satisfaction_slider.get())}")
+    
+    def mostra_m_val(value):
+        text_m.set(f"Mood: {int(mood_slider.get())}")
 
+    def mostra_pa_val(value):
+        text_pa.set(f"Attività Fisica: {int(ph_act_slider.get())}")
+
+    def mostra_so_val(value):
+        text_so.set(f"Relazioni Sociali: {int(social_slider.get())}")
+
+
+    #Slider e labels per la valutazione generale della giornata
+    day_val_label = ctk.CTkLabel(day_val_frame, textvariable=text_dv, font=("Helvetica", 12))
+    day_val_label.pack(side="left", pady=5)
+    day_val_slider = ctk.CTkSlider(day_val_frame, from_=1, to=10, number_of_steps=10, command=mostra_dv_val)
+    day_val_slider.pack(side="left", pady=5)
+    day_val_slider.set(0)
 
     #Slider e labels per la soddisfazione
     satisfaction_label = ctk.CTkLabel(satisfaction_frame, textvariable=text_s, font=("Helvetica", 12))
@@ -159,36 +201,68 @@ def show_diary_page(root):
     satisfaction_slider.pack(side="left", pady=5, padx=5)
     satisfaction_slider.set(0)
 
-    #Slider e  labels per la felicità
-    happiness_label = ctk.CTkLabel(happiness_frame, textvariable=text_h, font=("Helvetica", 12))
-    happiness_label.pack(side="left", pady=5, padx=5)
-    happiness_slider = ctk.CTkSlider(happiness_frame, from_=1, to=10, number_of_steps=10, command=mostra_h_val)
-    happiness_slider.pack(side="left", pady=5, padx=5)
-    happiness_slider.set(0)
+    #Slider e labels per il mood
+    mood_label = ctk.CTkLabel(mood_frame, textvariable=text_m, font=("Helvetica", 12))
+    mood_label.pack(side="left", pady=5, padx=5)
+    mood_slider = ctk.CTkSlider(mood_frame, from_=1, to=10, number_of_steps=10, command=mostra_m_val)
+    mood_slider.pack(side="left", pady=5, padx=5)
+    mood_slider.set(0)
 
+    #Slider e labels per lo stress
+    stress_label = ctk.CTkLabel(stress_frame, textvariable=text_st, font=("Helvetica", 12))
+    stress_label.pack(side="left", pady=5, padx=5)
+    stress_slider = ctk.CTkSlider(stress_frame, from_=1, to=10, number_of_steps=10, command=mostra_st_val)
+    stress_slider.pack(side="left", pady=5, padx=5)
+    stress_slider.set(0)
+
+    #Slider e labels per le attività fisiche
+    ph_act_label = ctk.CTkLabel(ph_act_frame, textvariable=text_pa, font=("Helvetica", 12))
+    ph_act_label.pack(side="left", pady=5, padx=5)
+    ph_act_slider = ctk.CTkSlider(ph_act_frame, from_=1, to=10, number_of_steps=10, command=mostra_pa_val)
+    ph_act_slider.pack(side="left", pady=5, padx=5)
+    ph_act_slider.set(0)
+
+    #Slider e labels per le relazioni sociali
+    social_label = ctk.CTkLabel(social_frame, textvariable=text_so, font=("Helvetica", 12))
+    social_label.pack(side="left", pady=5, padx=5)
+    social_slider = ctk.CTkSlider(social_frame, from_=1, to=10, number_of_steps=10, command=mostra_so_val)
+    social_slider.pack(side="left", pady=5, padx=5)
+    social_slider.set(0)
+    
 
     # Pulsante per inviare
-    btn_submit = ctk.CTkButton(bottom_right_frame, width = 140, height = 28, text_color = "#D3E3F9", text="INVIA", command=lambda: submit_entry(satisfaction_slider,happiness_slider,log_text, diary_entry, canvas, fig))
+    btn_submit = ctk.CTkButton(bottom_right_frame, width = 140, height = 28, text_color = "#D3E3F9", text="INVIA", 
+                               command=lambda: submit_entry(day_val_slider, stress_slider, satisfaction_slider, mood_slider, ph_act_slider, social_slider, log_text, diary_entry, canvas, fig))
     btn_submit.pack(side="top", pady=5)
     btn_submit.configure(font=("Helvetica", 14))
 
     diary_window.mainloop()
 
 
-def submit_entry(satisfaction_slider,happiness_slider,log_text, diary_entry, canvas, fig):
+def submit_entry(day_val_slider, stress_slider, satisfaction_slider, mood_slider , ph_act_slider, social_slider, log_text, diary_entry, canvas, fig):
     date_str = datetime.datetime.now().strftime("%d/%m/%Y")
     diary_text = diary_entry.get("1.0", tk.END).strip()
+    day_val = int(day_val_slider.get())
+    stress_level = int(stress_slider.get())
     satisfaction_level = int(satisfaction_slider.get())
-    happiness_level =int(happiness_slider.get())
+    mood_level = int(mood_slider.get())
+    physical_activity = int(ph_act_slider.get())
+    social_relations = int(social_slider.get())
+    
 
     if diary_text:
-        log = f"{date_str} | {diary_text} | {satisfaction_level} | {happiness_level}"
+        log = f"{date_str} | {diary_text}"
         save_log(log)
         log_text.insert(tk.END, log + "\n")
         update_graph(canvas, fig, load_log())
         diary_entry.delete("1.0", tk.END)
+        day_val_slider.set(0)
+        stress_slider.set(0)
         satisfaction_slider.set(0)
-        happiness_slider.set(0)
+        mood_slider.set(0)
+        ph_act_slider.set(0)
+        social_slider.set(0)
+
         messagebox.showinfo("","Pagina salvata con successo!")
         
     else:
