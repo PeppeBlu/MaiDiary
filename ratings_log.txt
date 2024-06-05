@@ -15,3 +15,6 @@
 05/06/2024 21:01:16 -> Valutazione: 8, Stress: 9, Soddisfazione: 9, Umore: 9, Attività fisica: 9, Relazioni sociali: 8, Qualità: 5
 05/06/2024 21:01:57 -> Valutazione: 10, Stress: 9, Soddisfazione: 9, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 6
 05/06/2024 21:03:23 -> Valutazione: 7, Stress: 9, Soddisfazione: 9, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 5
+05/06/2024 21:30:30 -> Valutazione: 3, Stress: 4, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
+05/06/2024 21:51:58 -> Valutazione: 10, Stress: 9, Soddisfazione: 9, Umore: 8, Attività fisica: 9, Relazioni sociali: 9, Qualità: 6
+05/06/2024 22:03:42 -> Valutazione: 8, Stress: 8, Soddisfazione: 8, Umore: 8, Attività fisica: 8, Relazioni sociali: 8, Qualità: 5
