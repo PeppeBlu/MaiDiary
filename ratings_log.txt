@@ -1,0 +1,17 @@
+05/06/2024 -> Valutazione: 2, Stress: 3, Soddisfazione: 3, Umore: 2, Attività fisica: 3, Relazioni sociali: 5, Qualità: 2.0
+05/06/2024 -> Valutazione: 1, Stress: 1, Soddisfazione: 1, Umore: 1, Attività fisica: 1, Relazioni sociali: 1, Qualità: 0.6666666666666666
+05/06/2024 -> Valutazione: 10, Stress: 10, Soddisfazione: 10, Umore: 10, Attività fisica: 10, Relazioni sociali: 10, Qualità: 6.666666666666667
+05/06/2024 -> Valutazione: 3, Stress: 5, Soddisfazione: 2, Umore: 2, Attività fisica: 2, Relazioni sociali: 2, Qualità: 1.0
+05/06/2024 20:21:25 -> Valutazione: 2, Stress: 4, Soddisfazione: 7, Umore: 6, Attività fisica: 4, Relazioni sociali: 2, Qualità: 2.8333333333333335
+05/06/2024 20:21:30 -> Valutazione: 1, Stress: 1, Soddisfazione: 1, Umore: 1, Attività fisica: 1, Relazioni sociali: 1, Qualità: 0.6666666666666666
+05/06/2024 20:26:15 -> Valutazione: 6, Stress: 4, Soddisfazione: 6, Umore: 7, Attività fisica: 2, Relazioni sociali: 2, Qualità: 3.1666666666666665
+05/06/2024 20:27:40 -> Valutazione: 2, Stress: 4, Soddisfazione: 9, Umore: 9, Attività fisica: 8, Relazioni sociali: 8, Qualità: 5.333333333333333
+05/06/2024 20:37:52 -> Valutazione: 6, Stress: 8, Soddisfazione: 10, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 5.833333333333333
+05/06/2024 20:47:01 -> Valutazione: 9, Stress: 9, Soddisfazione: 8, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 5.833333333333333
+05/06/2024 20:48:01 -> Valutazione: 6, Stress: 8, Soddisfazione: 7, Umore: 9, Attività fisica: 8, Relazioni sociali: 8, Qualità: 5.0
+05/06/2024 20:49:15 -> Valutazione: 1, Stress: 10, Soddisfazione: 1, Umore: 1, Attività fisica: 2, Relazioni sociali: 2, Qualità: -0.5
+05/06/2024 20:59:14 -> Valutazione: 6, Stress: 9, Soddisfazione: 8, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 5
+05/06/2024 21:00:44 -> Valutazione: 9, Stress: 9, Soddisfazione: 9, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 6
+05/06/2024 21:01:16 -> Valutazione: 8, Stress: 9, Soddisfazione: 9, Umore: 9, Attività fisica: 9, Relazioni sociali: 8, Qualità: 5
+05/06/2024 21:01:57 -> Valutazione: 10, Stress: 9, Soddisfazione: 9, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 6
+05/06/2024 21:03:23 -> Valutazione: 7, Stress: 9, Soddisfazione: 9, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 5
