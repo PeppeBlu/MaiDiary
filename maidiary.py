@@ -54,17 +54,19 @@ def main():
     main_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
 
     #Logo al programma
-    logo = tk.PhotoImage(file="MaiDiary_logo.png")
+    logo = tk.PhotoImage(file="MaiDiary_Logo.png")
     logo_label = tk.Label(main_frame, image=logo)
     logo_label.pack(side="top", pady=20)
 
     # Etichetta di benvenuto stampata a capo
-    welcome_label = ctk.CTkLabel(main_frame, text="Keep control, of your days...", font=("Helvetica", 16))
+    welcome_label = ctk.CTkLabel(main_frame, text="Keep control, of your days", font=("Helvetica", 16))
     welcome_label.pack(side="top")
 
     # Pulsante per accedere alla pagina di inserimento
-    btn_continue = ctk.CTkButton(main_frame, text="Go to MaiDiary", command=lambda: show_diary_page(root))
+    btn_continue = ctk.CTkButton(main_frame, width=250, height=50, text_color="#D3E3F9", text="Go to your MaiDiary", command=lambda: show_diary_page(root))
+    btn_continue.configure(font=("Helvetica", 20))
     btn_continue.pack(side="top")
+    
 
     root.mainloop()
 
@@ -74,7 +76,7 @@ def show_diary_page(root):
     # Elimino la finestra principale
     root.destroy()
 
-    # Creo una nuova finestra di livello superiore per il diario
+    # Nuova finestra di livello superiore per il diario
     diary_window = ctk.CTk()
     diary_window.title("Diario")
 
@@ -83,11 +85,8 @@ def show_diary_page(root):
     #diary_window.attributes('-zoomed', True)
     diary_window.resizable(width=True, height=True)
 
-    # Variabili per i valori di soddisfazione e felicità
-    s_val = tk.IntVar()
-    f_val = tk.IntVar()
 
-    #crea un top frame e un bottom frame
+    #Top frame e  bottom frame
     top_frame = ctk.CTkFrame(diary_window, corner_radius=20, bg_color="#D3E3F9")
     top_frame.pack(side="top",expand=True, fill="both")
 
@@ -153,13 +152,14 @@ def show_diary_page(root):
         text_s.set(f"Soddisfazione: {int(satisfaction_slider.get())}")
 
 
-    #Creo gli slider e le labels per la felicità e la soddisfazione
+    #Slider e labels per la soddisfazione
     satisfaction_label = ctk.CTkLabel(satisfaction_frame, textvariable=text_s, font=("Helvetica", 12))
     satisfaction_label.pack(side="left", pady=5, padx=5)
     satisfaction_slider = ctk.CTkSlider(satisfaction_frame, from_=1, to=10, number_of_steps=10, command=mostra_s_val)
     satisfaction_slider.pack(side="left", pady=5, padx=5)
     satisfaction_slider.set(0)
 
+    #Slider e  labels per la felicità
     happiness_label = ctk.CTkLabel(happiness_frame, textvariable=text_h, font=("Helvetica", 12))
     happiness_label.pack(side="left", pady=5, padx=5)
     happiness_slider = ctk.CTkSlider(happiness_frame, from_=1, to=10, number_of_steps=10, command=mostra_h_val)
@@ -168,8 +168,9 @@ def show_diary_page(root):
 
 
     # Pulsante per inviare
-    btn_submit = ctk.CTkButton(bottom_right_frame, text="INVIA", command=lambda: submit_entry(satisfaction_slider,happiness_slider,log_text, diary_entry, canvas, fig))
+    btn_submit = ctk.CTkButton(bottom_right_frame, width = 140, height = 28, text_color = "#D3E3F9", text="INVIA", command=lambda: submit_entry(satisfaction_slider,happiness_slider,log_text, diary_entry, canvas, fig))
     btn_submit.pack(side="top", pady=5)
+    btn_submit.configure(font=("Helvetica", 14))
 
     diary_window.mainloop()
 
@@ -188,7 +189,8 @@ def submit_entry(satisfaction_slider,happiness_slider,log_text, diary_entry, can
         diary_entry.delete("1.0", tk.END)
         satisfaction_slider.set(0)
         happiness_slider.set(0)
-        messagebox.showinfo("Successo", "Diario salvato con successo!")
+        messagebox.showinfo("","Pagina salvata con successo!")
+        
     else:
         messagebox.showwarning("Errore", "Il testo del diario non può essere vuoto.")
 
