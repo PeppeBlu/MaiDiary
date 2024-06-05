@@ -141,3 +141,25 @@ def show_diary_page(root):
     btn_submit.pack(side="top", pady=5)
 
     diary_window.mainloop()
+
+
+def submit_entry(satisfaction_slider,happiness_slider,log_text, diary_entry, canvas, fig):
+    date_str = datetime.datetime.now().strftime("%d/%m/%Y")
+    diary_text = diary_entry.get("1.0", tk.END).strip()
+    satisfaction_level = int(satisfaction_slider.get())
+    happiness_level =int(happiness_slider.get())
+
+    if diary_text:
+        log = f"{date_str} | {diary_text} | {satisfaction_level} | {happiness_level}"
+        save_log(log)
+        log_text.insert(tk.END, log + "\n")
+        update_graph(canvas, fig, load_log())
+        diary_entry.delete("1.0", tk.END)
+        satisfaction_slider.set(0)
+        happiness_slider.set(0)
+        messagebox.showinfo("Successo", "Diario salvato con successo!")
+    else:
+        messagebox.showwarning("Errore", "Il testo del diario non può essere vuoto.")
+
+if __name__ == "__main__":
+    main()
