@@ -7,6 +7,37 @@ import customtkinter as ctk
 
 
 
+# Funzione per salvare il log delle giornate
+def save_log(data):
+    with open("diary_log.txt", "a") as file:
+        file.write(data + "\n")
+
+# Funzione per caricare il log delle giornate
+def load_log():
+    try:
+        with open("diary_log.txt", "r") as file:
+            return file.readlines()
+    except FileNotFoundError:
+        return []
+
+
+def update_graph(canvas, figure, logs):
+    dates = []
+    satisfaction = []
+    for log in logs:
+        parts = log.strip().split("|")
+        if len(parts) == 4:  # Data, Diario, Soddisfazione, Felicità
+            dates.append(parts[0])
+            satisfaction.append(int(parts[2]))
+
+    figure.clear()
+    ax = figure.add_subplot(111)
+    ax.plot(dates, satisfaction, marker='o')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Satisfaction Level')
+    canvas.draw()
+
+
 
 def main():
     root = ctk.CTk()
