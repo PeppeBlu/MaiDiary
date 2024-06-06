@@ -97,6 +97,7 @@ def show_diary_page(root):
     height_r = root.winfo_height()
 
     # Elimino la finestra principale
+    #root.quit()
     root.destroy()
 
     # Nuova finestra di livello superiore per il diario
@@ -234,55 +235,43 @@ def show_diary_page(root):
 
     #Slider e labels per la valutazione generale della giornata
     day_val_label = ctk.CTkLabel(day_val_frame, textvariable=text_dv, font=("Helvetica", 15))
-    #day_val_label.pack(side="left", pady=5, padx=5)
     day_val_label.grid(row=0, column=1, pady=10)
     day_val_slider = ctk.CTkSlider(day_val_frame, from_=0, to=10, number_of_steps=10, command=mostra_dv_val)
-    #day_val_slider.pack(side="left", pady=5, padx=5)
     day_val_slider.grid(row=0, column=2, pady=10)
     day_val_slider.set(0)
 
     #Slider e labels per la soddisfazione
     satisfaction_label = ctk.CTkLabel(satisfaction_frame, textvariable=text_s, font=("Helvetica", 15))
-    #satisfaction_label.pack(side="left", pady=5, padx=5)
     satisfaction_label.grid(row=0, column=1, pady=10)
     satisfaction_slider = ctk.CTkSlider(satisfaction_frame, from_=0, to=10, number_of_steps=10, command=mostra_s_val)
-    #satisfaction_slider.pack(side="left", pady=5, padx=5)
     satisfaction_slider.grid(row=0, column=2, pady=10)
     satisfaction_slider.set(0)
 
     #Slider e labels per il mood
     mood_label = ctk.CTkLabel(mood_frame, textvariable=text_m, font=("Helvetica", 15))
-    #mood_label.pack(side="left", pady=5, padx=5)
     mood_label.grid(row=0, column=1, pady=10)
     mood_slider = ctk.CTkSlider(mood_frame, from_=0, to=10, number_of_steps=10, command=mostra_m_val)
-    #mood_slider.pack(side="left", pady=5, padx=5)
     mood_slider.grid(row=0, column=2, pady=10)
     mood_slider.set(0)
 
     #Slider e labels per lo stress
     stress_label = ctk.CTkLabel(stress_frame, textvariable=text_st, font=("Helvetica", 15))
-    #stress_label.pack(side="left", pady=5, padx=5)
     stress_label.grid(row=0, column=1, pady=10)
     stress_slider = ctk.CTkSlider(stress_frame, from_=0, to=10, number_of_steps=10, command=mostra_st_val)
-    #stress_slider.pack(side="left", pady=5, padx=5)
     stress_slider.grid(row=0, column=2, pady=10)
     stress_slider.set(0)
 
     #Slider e labels per le attività fisiche
     ph_act_label = ctk.CTkLabel(ph_act_frame, textvariable=text_pa, font=("Helvetica", 15))
-    #ph_act_label.pack(side="left", pady=5, padx=5)
     ph_act_label.grid(row=0, column=1, pady=10)
     ph_act_slider = ctk.CTkSlider(ph_act_frame, from_=0, to=10, number_of_steps=10, command=mostra_pa_val)
-    #ph_act_slider.pack(side="left", pady=5, padx=5)
     ph_act_slider.grid(row=0, column=2, pady=10)
     ph_act_slider.set(0)
 
     #Slider e labels per le relazioni sociali
     social_label = ctk.CTkLabel(social_frame, textvariable=text_so, font=("Helvetica", 15))
-    #social_label.pack(side="left", pady=5, padx=5)
     social_label.grid(row=0, column=1, pady=10)
     social_slider = ctk.CTkSlider(social_frame, from_=0, to=10, number_of_steps=10, command=mostra_so_val)
-    #social_slider.pack(side="left", pady=5, padx=5)
     social_slider.grid(row=0, column=2, pady=10)
     social_slider.set(0)
 

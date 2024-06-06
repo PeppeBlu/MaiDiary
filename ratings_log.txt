@@ -3,3 +3,4 @@
 05/06/2024 22:46:32 -> Valutazione: 6, Stress: 1, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
 05/06/2024 22:50:26 -> Valutazione: 0, Stress: 0, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
 05/06/2024 22:52:08 -> Valutazione: 10, Stress: 0, Soddisfazione: 9, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 7
+06/06/2024 20:26:54 -> Valutazione: 5, Stress: 4, Soddisfazione: 3, Umore: 4, Attività fisica: 3, Relazioni sociali: 2, Qualità: 2
