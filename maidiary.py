@@ -4,28 +4,61 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import datetime
 import customtkinter as ctk
+import os
 
+directory_path = "diary_logs"
 
+def refresh_logs(logs, top_left_frame):
+    # Elimino tutti i widget presenti nel frame
+    for widget in top_left_frame.winfo_children():
+        widget.destroy()
+    for log in logs:    
+        log_text = ctk.CTkTextbox(top_left_frame, border_color="#D3E3F9", height=70,
+                                  corner_radius=15, scrollbar_button_color="#D3E3F9")
+        log_text.pack(expand=True, fill="both", padx=5, pady=5)
+
+        with open(f"{directory_path}/{log}", "r") as file:
+            log_content = file.read()
+
+        log_text.insert(tk.END, log_content + "\n")
+        
 
 # Funzione per salvare il log delle giornate
 def save_log(data):
-    with open("diary_log.txt", "a") as file:
-        file.write(data + "\n")
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    with open(f"{directory_path}/{timestamp}.txt", "w") as file:
+        file.write(data)
+
 
 # Funzione per caricare il log delle giornate
 def load_log():
     try:
-        with open("diary_log.txt", "r") as file:
-            return file.readlines()
+        file_contents = {}
+        for entry in os.scandir(directory_path):
+            if entry.is_file():
+                with open(entry.path, 'r') as file:
+                    file_contents[entry.name] = file.read()
+        return file_contents
     except FileNotFoundError:
         return []
+    
 
-def calculate_quality(day_val, stress_level, satisfaction_level, mood_level, physical_activity, social_relations):
-    return (day_val + satisfaction_level + mood_level + physical_activity + social_relations - stress_level) / 6
+def calculate_quality(day_val, stress_level, satisfaction_level, mood_level, 
+                      physical_activity, social_relations):
+    
+    return (day_val + satisfaction_level + mood_level + physical_activity + 
+            social_relations - stress_level) / 6
 
-def save_ratings(timestamp, day_val, stress_level, satisfaction_level, mood_level, physical_activity, social_relations, quality_of_day):
+
+def save_ratings(timestamp, day_val, stress_level, satisfaction_level, mood_level, 
+                 physical_activity, social_relations, quality_of_day):
+    
     with open("ratings_log.txt", "a") as file:
-        file.write(f"{timestamp} -> Valutazione: {day_val}, Stress: {stress_level}, Soddisfazione: {satisfaction_level}, Umore: {mood_level}, Attività fisica: {physical_activity}, Relazioni sociali: {social_relations}, Qualità: {int(quality_of_day)}\n")
+        file.write(f"{timestamp} -> Valutazione: {day_val}, Stress: {stress_level}, "
+                   f"Soddisfazione: {satisfaction_level}, Umore: {mood_level}, "
+                   f"Attività fisica: {physical_activity}, Relazioni sociali: {social_relations}, "
+                   f"Qualità: {int(quality_of_day)}\n"
+                   )
         
 def load_ratings():
     try:
@@ -59,11 +92,11 @@ def update_graph(canvas, figure, logs):
 
 def main():
     root = ctk.CTk()
-    root.title("Maidiary")
+    root.title("Maidiary by Peppe Blunda")
 
     #forza ad avere la finestra a schermo intero mantenendo la barra di navigazione
     #root.attributes('-zoomed', True)
-    root.geometry("800x600")
+    root.geometry("800x700")
     root.resizable(width=True, height=True)
     
     # Configurazione del frame principale
@@ -78,10 +111,11 @@ def main():
 
     # Etichetta di benvenuto stampata a capo
     welcome_label = ctk.CTkLabel(main_frame, text="Keep control, of your days", font=("Helvetica", 16))
-    welcome_label.pack(side="top")
+    welcome_label.pack(side="top", pady=10)
 
     # Pulsante per accedere alla pagina di inserimento
-    btn_continue = ctk.CTkButton(main_frame, width=250, height=50, text_color="#D3E3F9", text="Go to your MaiDiary", command=lambda: show_diary_page(root))
+    btn_continue = ctk.CTkButton(main_frame, width=250, height=50, text_color="#D3E3F9", 
+                                 text="Go to your MaiDiary", command=lambda: show_diary_page(root))
     btn_continue.configure(font=("Helvetica", 20))
     btn_continue.pack(side="top")
     
@@ -97,8 +131,8 @@ def show_diary_page(root):
     height_r = root.winfo_height()
 
     # Elimino la finestra principale
-    #root.quit()
     root.destroy()
+    
 
     # Nuova finestra di livello superiore per il diario
     diary_window = ctk.CTk()
@@ -117,8 +151,10 @@ def show_diary_page(root):
     bottom_frame.pack(side="bottom",expand=True, fill="both")
 
     # Frame in alto a sinistra
-    top_left_frame = ctk.CTkFrame(top_frame, corner_radius=15, fg_color="#D3E3F9")
+    #top_left_frame = ctk.CTkFrame(top_frame, corner_radius=15, fg_color="#D3E3F9")
+    top_left_frame = ctk.CTkScrollableFrame(top_frame, corner_radius=15, fg_color="#D3E3F9")
     top_left_frame.pack(side="left",expand=True, fill="both", padx=5, pady=5)
+    
 
     # Frame in basso a sinistra
     bottom_left_frame = ctk.CTkFrame(bottom_frame, corner_radius=15, fg_color="#D3E3F9")
@@ -177,16 +213,13 @@ def show_diary_page(root):
     social_frame.grid_columnconfigure(2, weight=1)
 
 
-    
     # Log delle precedenti pagine di diario 
+    #logs è un array di stringhe che rappresentano le pagine del diario
     logs = load_log()
-    log_text = ctk.CTkTextbox(top_left_frame, border_color="#D3E3F9", corner_radius=15, scrollbar_button_color="#D3E3F9")
-    log_text.pack(expand=True, fill="both", padx=5, pady=5)
-    for log in logs:
-        log_text.insert(tk.END, log)
+    refresh_logs(logs, top_left_frame)
 
    # Grafico che si adatta alla finestra bottom_left
-    fig = plt.Figure(figsize=(15, 7), dpi=50)
+    fig = plt.Figure(figsize=(8, 7), dpi=50)
     canvas = FigureCanvasTkAgg(fig, master=bottom_left_frame)
     canvas_widget = canvas.get_tk_widget()
     canvas_widget.pack(expand=True, fill="both", padx=5, pady=5)
@@ -194,7 +227,8 @@ def show_diary_page(root):
 
 
     # Area di inserimento del diario
-    diary_entry = ctk.CTkTextbox(top_right_frame, border_color="#D3E3F9", corner_radius=15, scrollbar_button_color="#D3E3F9")
+    diary_entry = ctk.CTkTextbox(top_right_frame, border_color="#D3E3F9", 
+                                 corner_radius=15, scrollbar_button_color="#D3E3F9")
     diary_entry.pack(expand=True, fill="both", padx=5, pady=5)
     
     text_dv = tk.StringVar(value="0")
@@ -279,19 +313,21 @@ def show_diary_page(root):
     # Pulsante per inviare
     btn_submit = ctk.CTkButton(bottom_right_frame, width = 140, height = 28, text_color = "#D3E3F9", text="INVIA", 
                                command=lambda: submit_entry(day_val_slider, stress_slider, satisfaction_slider, mood_slider , 
-                                                            ph_act_slider, social_slider, log_text, diary_entry, canvas, fig, 
+                                                            ph_act_slider, social_slider, logs, diary_entry, canvas, fig, 
                                                             mostra_dv_val, mostra_st_val, mostra_s_val, mostra_m_val, mostra_pa_val, 
-                                                            mostra_so_val))
+                                                            mostra_so_val,top_left_frame))
     btn_submit.pack(side="top", pady=5)
     btn_submit.configure(font=("Helvetica", 14))
+
+    
 
     diary_window.mainloop()
 
 
-def submit_entry(day_val_slider, stress_slider, satisfaction_slider, mood_slider, 
-                                                            ph_act_slider, social_slider, log_text, diary_entry, canvas, fig, 
-                                                            mostra_dv_val, mostra_st_val, mostra_s_val, mostra_m_val, mostra_pa_val, 
-                                                            mostra_so_val):
+def submit_entry(day_val_slider, stress_slider, satisfaction_slider, mood_slider, ph_act_slider, 
+                 social_slider, logs, diary_entry, canvas, fig,mostra_dv_val, mostra_st_val, 
+                 mostra_s_val, mostra_m_val, mostra_pa_val,mostra_so_val, top_left_frame):
+    
     date_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     diary_text = diary_entry.get("1.0", tk.END).strip()
     day_val = int(day_val_slider.get())
@@ -317,13 +353,17 @@ def submit_entry(day_val_slider, stress_slider, satisfaction_slider, mood_slider
 
 
     # Calcolo della qualità della giornata
-    quality_of_day = calculate_quality(day_val, stress_level, satisfaction_level, mood_level, physical_activity, social_relations)
+    quality_of_day = calculate_quality(day_val, stress_level, satisfaction_level, 
+                                       mood_level, physical_activity, social_relations)
 
     if diary_text:
-        log = f"{date_str} | {diary_text}"
+        log = f"{date_str} \n {diary_text}"
         save_log(log)
-        save_ratings(date_str, day_val, stress_level, satisfaction_level, mood_level, physical_activity, social_relations, quality_of_day)
-        log_text.insert(tk.END, log + "\n")
+        logs = load_log()
+        refresh_logs(logs, top_left_frame)
+        save_ratings(date_str, day_val, stress_level, satisfaction_level, mood_level, 
+                     physical_activity, social_relations, quality_of_day)
+        
         update_graph(canvas, fig, load_ratings())
         diary_entry.delete("1.0", tk.END)
         day_val_slider.set(0)

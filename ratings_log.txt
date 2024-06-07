@@ -1,6 +1,6 @@
-05/06/2024 22:46:04 -> Valutazione: 2, Stress: 8, Soddisfazione: 6, Umore: 6, Attività fisica: 4, Relazioni sociali: 8, Qualità: 3
-05/06/2024 22:46:23 -> Valutazione: 2, Stress: 2, Soddisfazione: 6, Umore: 4, Attività fisica: 3, Relazioni sociali: 10, Qualità: 3
-05/06/2024 22:46:32 -> Valutazione: 6, Stress: 1, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
-05/06/2024 22:50:26 -> Valutazione: 0, Stress: 0, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
-05/06/2024 22:52:08 -> Valutazione: 10, Stress: 0, Soddisfazione: 9, Umore: 9, Attività fisica: 9, Relazioni sociali: 9, Qualità: 7
-06/06/2024 20:26:54 -> Valutazione: 5, Stress: 4, Soddisfazione: 3, Umore: 4, Attività fisica: 3, Relazioni sociali: 2, Qualità: 2
+07/06/2024 15:36:07 -> Valutazione: 0, Stress: 0, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
+07/06/2024 15:36:10 -> Valutazione: 0, Stress: 0, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
+07/06/2024 15:43:30 -> Valutazione: 0, Stress: 0, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
+07/06/2024 15:43:36 -> Valutazione: 0, Stress: 0, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
+07/06/2024 15:44:27 -> Valutazione: 0, Stress: 0, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
+07/06/2024 15:45:42 -> Valutazione: 0, Stress: 0, Soddisfazione: 0, Umore: 0, Attività fisica: 0, Relazioni sociali: 0, Qualità: 0
