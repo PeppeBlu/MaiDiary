@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import messagebox
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import datetime
@@ -8,6 +8,7 @@ import os
 
 directory_path = "diary_logs"
 
+#Funzione che aggiorna i log
 def refresh_logs(logs, top_left_frame):
     # Elimino tutti i widget presenti nel frame
     for widget in top_left_frame.winfo_children():
@@ -22,15 +23,13 @@ def refresh_logs(logs, top_left_frame):
 
         log_text.insert(tk.END, log_content + "\n")
         
-
-# Funzione per salvare il log delle giornate
+# Funzione che salva il log delle giornate
 def save_log(data):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     with open(f"{directory_path}/{timestamp}.txt", "w") as file:
         file.write(data)
 
-
-# Funzione per caricare il log delle giornate
+# Funzione che carica il log delle giornate
 def load_log():
     try:
         file_contents = {}
@@ -42,14 +41,14 @@ def load_log():
     except FileNotFoundError:
         return []
     
-
+#Funzione che calcola la qualità della giornata
 def calculate_quality(day_val, stress_level, satisfaction_level, mood_level, 
                       physical_activity, social_relations):
     
     return (day_val + satisfaction_level + mood_level + physical_activity + 
             social_relations - stress_level) / 6
 
-
+#Funzione che salva le valutazioni
 def save_ratings(timestamp, day_val, stress_level, satisfaction_level, mood_level, 
                  physical_activity, social_relations, quality_of_day):
     
@@ -59,7 +58,8 @@ def save_ratings(timestamp, day_val, stress_level, satisfaction_level, mood_leve
                    f"Attività fisica: {physical_activity}, Relazioni sociali: {social_relations}, "
                    f"Qualità: {int(quality_of_day)}\n"
                    )
-        
+
+#Funzione che carica le valutazioni        
 def load_ratings():
     try:
         with open("ratings_log.txt", "r") as file:
@@ -67,7 +67,7 @@ def load_ratings():
     except FileNotFoundError:
         return []
 
-
+#Funzione che aggiorna il grafico
 def update_graph(canvas, figure, logs):
     timestamps = []
     quality_of_days = []
@@ -89,24 +89,19 @@ def update_graph(canvas, figure, logs):
     plt.xticks(rotation=45, ha='right')
     canvas.draw()
 
+# Funzione per la chiusura della finestra principale
+def on_closing_root(root):
+    if messagebox.askokcancel("Quit", "Vuoi davvero chiudere MaiDiary?"):
+        root.quit()
 
-def main():
-    root = ctk.CTk()
-    root.title("Maidiary by Peppe Blunda")
-
-    #forza ad avere la finestra a schermo intero mantenendo la barra di navigazione
-    #root.attributes('-zoomed', True)
-    root.geometry("800x700")
-    root.resizable(width=True, height=True)
-    
-    # Configurazione del frame principale
+#Funzione che crea il mainLframe
+def create_main_frame(root):
     main_frame = ctk.CTkFrame(root, corner_radius=20)
     #voglio che il frame prenda tutto lo spazio
     main_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
 
     #Logo al programma
-    logo = tk.PhotoImage(file="MaiDiary_Logo.png")
-    logo_label = tk.Label(main_frame, image=logo)
+    logo_label = tk.Label(main_frame, image=root.logo_image)
     logo_label.pack(side="top", pady=20)
 
     # Etichetta di benvenuto stampata a capo
@@ -115,46 +110,56 @@ def main():
 
     # Pulsante per accedere alla pagina di inserimento
     btn_continue = ctk.CTkButton(main_frame, width=250, height=50, text_color="#D3E3F9", 
-                                 text="Go to your MaiDiary", command=lambda: show_diary_page(root))
+                                 text="Go to your MaiDiary", command=lambda: show_diary_page(root, main_frame))
     btn_continue.configure(font=("Helvetica", 20))
     btn_continue.pack(side="top")
+
+    return main_frame
+
+def back_to_main(root, diary_frame):
+    diary_frame.destroy()
+    main_frame = create_main_frame(root)
+    main_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
+
+
+def main():
+    root = ctk.CTk()
+    root.title("Maidiary by Peppe Blunda")
+
+    # Associa la funzione di chiusura personalizzata all'evento di chiusura della finestra principale
+    root.protocol("WM_DELETE_WINDOW", lambda: on_closing_root(root))
+
+    #forza ad avere la finestra a schermo intero mantenendo la barra di navigazione
+    #root.attributes('-zoomed', True)
+    root.geometry("800x600")
+    root.resizable(width=True, height=True)
     
+    # Carica l'immagine del logo una volta e mantieni un riferimento
+    root.logo_image = tk.PhotoImage(file="MaiDiary_Logo.png")
+
+    # Configurazione del frame principale
+    main_frame = create_main_frame(root)
+    main_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
 
     root.mainloop()
 
 
-def show_diary_page(root):
+def show_diary_page(root, main_frame):
     
-    #Salva le informazioni della grandezza della finestra root che possono essere cambiate
-    #per poi essere ripristinate nella nuova finestra
-    width_r = root.winfo_width()
-    height_r = root.winfo_height()
+    main_frame.destroy()
 
-    # Elimino la finestra principale
-    root.destroy()
-    
-
-    # Nuova finestra di livello superiore per il diario
-    diary_window = ctk.CTk()
-    diary_window.title("Diario")
-
-    # Imposto le dimensioni della finestra del diario per corrispondere a quelle della finestra principale
-    diary_window.geometry(f"{width_r}x{height_r}")
-    diary_window.resizable(width=True, height=True)
-        
-
+    diary_frame = ctk.CTkFrame(root, corner_radius=20)
+    diary_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
+ 
     #Top frame e  bottom frame
-    top_frame = ctk.CTkFrame(diary_window, corner_radius=20, bg_color="#D3E3F9")
+    top_frame = ctk.CTkFrame(diary_frame, corner_radius=20, bg_color="#D3E3F9")
     top_frame.pack(side="top",expand=True, fill="both")
-
-    bottom_frame = ctk.CTkFrame(diary_window, corner_radius=20, bg_color="#D3E3F9")
+    bottom_frame = ctk.CTkFrame(diary_frame, corner_radius=20, bg_color="#D3E3F9")
     bottom_frame.pack(side="bottom",expand=True, fill="both")
 
     # Frame in alto a sinistra
-    #top_left_frame = ctk.CTkFrame(top_frame, corner_radius=15, fg_color="#D3E3F9")
     top_left_frame = ctk.CTkScrollableFrame(top_frame, corner_radius=15, fg_color="#D3E3F9")
     top_left_frame.pack(side="left",expand=True, fill="both", padx=5, pady=5)
-    
 
     # Frame in basso a sinistra
     bottom_left_frame = ctk.CTkFrame(bottom_frame, corner_radius=15, fg_color="#D3E3F9")
@@ -213,30 +218,30 @@ def show_diary_page(root):
     social_frame.grid_columnconfigure(2, weight=1)
 
 
-    # Log delle precedenti pagine di diario 
+    #Log delle precedenti pagine di diario 
     #logs è un array di stringhe che rappresentano le pagine del diario
     logs = load_log()
     refresh_logs(logs, top_left_frame)
 
-   # Grafico che si adatta alla finestra bottom_left
-    fig = plt.Figure(figsize=(8, 7), dpi=50)
+   #Grafico della qualità della giornata
+    fig = plt.Figure(figsize=(8, 6), dpi=50)
     canvas = FigureCanvasTkAgg(fig, master=bottom_left_frame)
     canvas_widget = canvas.get_tk_widget()
     canvas_widget.pack(expand=True, fill="both", padx=5, pady=5)
     update_graph(canvas, fig, load_ratings())
 
 
-    # Area di inserimento del diario
+    #Area di inserimento del diario
     diary_entry = ctk.CTkTextbox(top_right_frame, border_color="#D3E3F9", 
                                  corner_radius=15, scrollbar_button_color="#D3E3F9")
     diary_entry.pack(expand=True, fill="both", padx=5, pady=5)
     
-    text_dv = tk.StringVar(value="0")
-    text_st = tk.StringVar(value="0")
-    text_s = tk.StringVar(value="0")
-    text_m = tk.StringVar(value="0")
-    text_pa = tk.StringVar(value="0")
-    text_so = tk.StringVar(value="0")
+    text_dv = ctk.StringVar(value="0")
+    text_st = ctk.StringVar(value="0")
+    text_s = ctk.StringVar(value="0")
+    text_m = ctk.StringVar(value="0")
+    text_pa = ctk.StringVar(value="0")
+    text_so = ctk.StringVar(value="0")
     
 
     text_dv.set(f"Valutazione giornaliera: {text_dv.get()}")
@@ -247,7 +252,7 @@ def show_diary_page(root):
     text_so.set(f"Relazioni Sociali: {text_so.get()}")
 
 
-    # Funzione per mostrare il valore del cursore della soddisfazione come testo
+    #Funzioni per mostrare i valori dei cursori
     def mostra_dv_val(value):
         text_dv.set(f"Valutazione giornaliera: {int(day_val_slider.get())}")
 
@@ -268,119 +273,112 @@ def show_diary_page(root):
 
 
     #Slider e labels per la valutazione generale della giornata
-    day_val_label = ctk.CTkLabel(day_val_frame, textvariable=text_dv, font=("Helvetica", 15))
-    day_val_label.grid(row=0, column=1, pady=10)
+    day_val_label = ctk.CTkLabel(day_val_frame, textvariable=text_dv, font=("Helvetica", 12))
+    day_val_label.grid(row=0, column=1, pady=5)
     day_val_slider = ctk.CTkSlider(day_val_frame, from_=0, to=10, number_of_steps=10, command=mostra_dv_val)
-    day_val_slider.grid(row=0, column=2, pady=10)
+    day_val_slider.grid(row=0, column=2, pady=5)
     day_val_slider.set(0)
 
     #Slider e labels per la soddisfazione
-    satisfaction_label = ctk.CTkLabel(satisfaction_frame, textvariable=text_s, font=("Helvetica", 15))
-    satisfaction_label.grid(row=0, column=1, pady=10)
+    satisfaction_label = ctk.CTkLabel(satisfaction_frame, textvariable=text_s, font=("Helvetica", 12))
+    satisfaction_label.grid(row=0, column=1, pady=5)
     satisfaction_slider = ctk.CTkSlider(satisfaction_frame, from_=0, to=10, number_of_steps=10, command=mostra_s_val)
-    satisfaction_slider.grid(row=0, column=2, pady=10)
+    satisfaction_slider.grid(row=0, column=2, pady=5)
     satisfaction_slider.set(0)
 
     #Slider e labels per il mood
-    mood_label = ctk.CTkLabel(mood_frame, textvariable=text_m, font=("Helvetica", 15))
-    mood_label.grid(row=0, column=1, pady=10)
+    mood_label = ctk.CTkLabel(mood_frame, textvariable=text_m, font=("Helvetica", 12))
+    mood_label.grid(row=0, column=1, pady=5)
     mood_slider = ctk.CTkSlider(mood_frame, from_=0, to=10, number_of_steps=10, command=mostra_m_val)
-    mood_slider.grid(row=0, column=2, pady=10)
+    mood_slider.grid(row=0, column=2, pady=5)
     mood_slider.set(0)
 
     #Slider e labels per lo stress
-    stress_label = ctk.CTkLabel(stress_frame, textvariable=text_st, font=("Helvetica", 15))
-    stress_label.grid(row=0, column=1, pady=10)
+    stress_label = ctk.CTkLabel(stress_frame, textvariable=text_st, font=("Helvetica", 12))
+    stress_label.grid(row=0, column=1, pady=5)
     stress_slider = ctk.CTkSlider(stress_frame, from_=0, to=10, number_of_steps=10, command=mostra_st_val)
-    stress_slider.grid(row=0, column=2, pady=10)
+    stress_slider.grid(row=0, column=2, pady=5)
     stress_slider.set(0)
 
     #Slider e labels per le attività fisiche
-    ph_act_label = ctk.CTkLabel(ph_act_frame, textvariable=text_pa, font=("Helvetica", 15))
-    ph_act_label.grid(row=0, column=1, pady=10)
+    ph_act_label = ctk.CTkLabel(ph_act_frame, textvariable=text_pa, font=("Helvetica", 12))
+    ph_act_label.grid(row=0, column=1, pady=5)
     ph_act_slider = ctk.CTkSlider(ph_act_frame, from_=0, to=10, number_of_steps=10, command=mostra_pa_val)
-    ph_act_slider.grid(row=0, column=2, pady=10)
+    ph_act_slider.grid(row=0, column=2, pady=5)
     ph_act_slider.set(0)
 
     #Slider e labels per le relazioni sociali
-    social_label = ctk.CTkLabel(social_frame, textvariable=text_so, font=("Helvetica", 15))
-    social_label.grid(row=0, column=1, pady=10)
+    social_label = ctk.CTkLabel(social_frame, textvariable=text_so, font=("Helvetica", 12))
+    social_label.grid(row=0, column=1, pady=5)
     social_slider = ctk.CTkSlider(social_frame, from_=0, to=10, number_of_steps=10, command=mostra_so_val)
-    social_slider.grid(row=0, column=2, pady=10)
+    social_slider.grid(row=0, column=2, pady=5)
     social_slider.set(0)
 
 
-    # Pulsante per inviare
+    #Pulsante per fare il submit
     btn_submit = ctk.CTkButton(bottom_right_frame, width = 140, height = 28, text_color = "#D3E3F9", text="INVIA", 
-                               command=lambda: submit_entry(day_val_slider, stress_slider, satisfaction_slider, mood_slider , 
-                                                            ph_act_slider, social_slider, logs, diary_entry, canvas, fig, 
-                                                            mostra_dv_val, mostra_st_val, mostra_s_val, mostra_m_val, mostra_pa_val, 
-                                                            mostra_so_val,top_left_frame))
+                               command=lambda: submit_entry())
     btn_submit.pack(side="top", pady=5)
     btn_submit.configure(font=("Helvetica", 14))
 
-    
-
-    diary_window.mainloop()
 
 
-def submit_entry(day_val_slider, stress_slider, satisfaction_slider, mood_slider, ph_act_slider, 
-                 social_slider, logs, diary_entry, canvas, fig,mostra_dv_val, mostra_st_val, 
-                 mostra_s_val, mostra_m_val, mostra_pa_val,mostra_so_val, top_left_frame):
-    
-    date_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    diary_text = diary_entry.get("1.0", tk.END).strip()
-    day_val = int(day_val_slider.get())
-    stress_level = int(stress_slider.get())
-    satisfaction_level = int(satisfaction_slider.get())
-    mood_level = int(mood_slider.get())
-    physical_activity = int(ph_act_slider.get())
-    social_relations = int(social_slider.get())
+    def submit_entry():
+        date_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        diary_text = diary_entry.get("1.0", ctk.END).strip()
+        day_val = int(day_val_slider.get())
+        stress_level = int(stress_slider.get())
+        satisfaction_level = int(satisfaction_slider.get())
+        mood_level = int(mood_slider.get())
+        physical_activity = int(ph_act_slider.get())
+        social_relations = int(social_slider.get())
 
-    # Reset dei valori dei cursori dopo l'invio
-    day_val_slider.set(0)
-    mostra_dv_val(0)
-    stress_slider.set(0)
-    mostra_st_val(0)
-    satisfaction_slider.set(0)
-    mostra_s_val(0)
-    mood_slider.set(0)
-    mostra_m_val(0)
-    ph_act_slider.set(0)
-    mostra_pa_val(0)
-    social_slider.set(0)
-    mostra_so_val(0)
-
-
-    # Calcolo della qualità della giornata
-    quality_of_day = calculate_quality(day_val, stress_level, satisfaction_level, 
-                                       mood_level, physical_activity, social_relations)
-
-    if diary_text:
-        log = f"{date_str} \n {diary_text}"
-        save_log(log)
-        logs = load_log()
-        refresh_logs(logs, top_left_frame)
-        save_ratings(date_str, day_val, stress_level, satisfaction_level, mood_level, 
-                     physical_activity, social_relations, quality_of_day)
-        
-        update_graph(canvas, fig, load_ratings())
-        diary_entry.delete("1.0", tk.END)
+        # Reset dei valori dei cursori dopo l'invio
         day_val_slider.set(0)
+        mostra_dv_val(0)
         stress_slider.set(0)
+        mostra_st_val(0)
         satisfaction_slider.set(0)
+        mostra_s_val(0)
         mood_slider.set(0)
+        mostra_m_val(0)
         ph_act_slider.set(0)
+        mostra_pa_val(0)
         social_slider.set(0)
+        mostra_so_val(0)
 
-        messagebox.showinfo("","Pagina salvata con successo!")
-        
-    else:
-        messagebox.showwarning("Errore", "Il testo del diario non può essere vuoto.")
+
+        # Calcolo della qualità della giornata
+        quality_of_day = calculate_quality(day_val, stress_level, satisfaction_level, 
+                                        mood_level, physical_activity, social_relations)
+
+        if diary_text:
+            log = f"{date_str} \n {diary_text}"
+            save_log(log)
+            logs = load_log()
+            refresh_logs(logs, top_left_frame)
+            save_ratings(date_str, day_val, stress_level, satisfaction_level, mood_level, 
+                        physical_activity, social_relations, quality_of_day)
+            
+            update_graph(canvas, fig, load_ratings())
+            diary_entry.delete("1.0", ctk.END)
+            day_val_slider.set(0)
+            stress_slider.set(0)
+            satisfaction_slider.set(0)
+            mood_slider.set(0)
+            ph_act_slider.set(0)
+            social_slider.set(0)
+
+            messagebox.showinfo("","Pagina salvata con successo!")
+            
+        else:
+            messagebox.showwarning("Errore", "Il testo del diario non può essere vuoto.")
 
     
 
 if __name__ == "__main__":
     main()
+  
+
 
     
