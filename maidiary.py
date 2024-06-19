@@ -9,47 +9,91 @@ import os
 logs_path = "diary_logs"
 ratings_file = "ratings_log.txt"
 
+ctk.set_appearance_mode("light")
+
 #Funzione che aggiorna i log
-def refresh_logs(logs, ratings, left_frame):
+def refresh_logs(logs, left_frame):
     # Elimino tutti i widget presenti nel frame
     for widget in left_frame.winfo_children():
         widget.destroy()
     for log in logs:    
         log_frame = ctk.CTkFrame(left_frame, corner_radius=15, fg_color="#D3E3F9")
         log_frame.pack(side="top", expand=True, fill="both", padx=2, pady=5)
+        
+        buttons_frame = ctk.CTkFrame(left_frame, corner_radius=15, fg_color="#D3E3F9")
+        buttons_frame.pack(side="top", expand=True, fill="both", padx=2, pady=2)
+        buttons_frame.grid_rowconfigure(0, weight=1)
+        buttons_frame.grid_columnconfigure(0, weight=1)
+        buttons_frame.grid_columnconfigure(1, weight=1)
 
         log_text = ctk.CTkTextbox(log_frame, border_color="#D3E3F9", height=200,
                                   corner_radius=15, scrollbar_button_color="#D3E3F9")
-        log_text.pack(expand=True,side="left", fill="both", padx=2, pady=5)
+        log_text.pack(expand=True, fill="both", padx=2, pady=5)
 
         with open(f"{logs_path}/{log}", "r") as file:
             log_content = file.read()
             log_text.insert(tk.END, log_content + "\n")
 
-        erase_button = ctk.CTkButton(log_frame, text="Cancella", width=10, height=2, fg_color="blue", hover_color="red",
-                                            command=lambda: delete_log(log_frame))
-        erase_button.pack(side="right", padx=5, pady=5)
+        delete_button = ctk.CTkButton(buttons_frame, text="Cancella", width=50, height=10, hover_color="red",
+                                            command=lambda log=log: delete_log(log))
+        delete_button.grid(row=0, column=0, pady=2)
+
+
+        visualize_button = ctk.CTkButton(buttons_frame, text="Visualizza", width=50, height=10, hover_color="green",
+                                            command=lambda left_frame=left_frame, log_content=log_content: visualize_log(log, log_content, left_frame))
+        visualize_button.grid(row=0, column=1, pady=2)
 
         
                 
-
-
-    def delete_log(log_frame):
-        if messagebox.askyesno("","Vuoi davvero eliminare la pagina?"):
-                
-            for widget in log_frame.winfo_children():
-                widget.destroy()
-            log_frame.destroy() 
+    #Funzione che elimina un log
+    def delete_log(log):
+        if messagebox.askyesno("", "Vuoi davvero eliminare la pagina?"):
+            pass
+            os.remove(f"{logs_path}/{log}")
             logs = load_logs()
-            refresh_logs(logs, ratings, left_frame)
+            refresh_logs(logs, left_frame)
             messagebox.showinfo("","Pagina eliminata con successo!")
+        
+    def visualize_log(log, log_content, left_frame):
+        #creo un frame per visualizzare il log selezionato eliminando i widget presenti
+        for widget in left_frame.winfo_children():
+            widget.destroy()
 
-def load_ratings():
-    try:
-        with open(ratings_file, "r") as file:
-            return file.readlines()
-    except FileNotFoundError:
-        return []
+        #print("Log content: " + log_content) 
+        visualize_frame = ctk.CTkFrame(left_frame, corner_radius=15, fg_color="#D3E3F9")
+        visualize_frame.pack(side="top", expand=True, fill="both", padx=2, pady=5)
+
+        visualize_text = ctk.CTkTextbox(visualize_frame, border_color="#D3E3F9", height=200,
+                                        corner_radius=15, scrollbar_button_color="#D3E3F9")                 
+        visualize_text.pack(expand=True, fill="both", padx=2, pady=5)
+        visualize_text.insert(tk.END, log_content + "\n")
+
+        visualize_buttons_frame = ctk.CTkFrame(visualize_frame, corner_radius=15, fg_color="#D3E3F9")
+        visualize_buttons_frame.pack(side="bottom", expand=True, fill="both", padx=2, pady=2)
+        visualize_buttons_frame.grid_rowconfigure(0, weight=1)
+        visualize_buttons_frame.grid_columnconfigure(1, weight=1)
+        visualize_buttons_frame.grid_columnconfigure(0, weight=1)
+
+        #Pulsanti per eliminarla o per salvarla
+        close_button = ctk.CTkButton(visualize_buttons_frame, text="Chiudi", width=50, height=10, hover_color="red",
+                                            command=lambda: close_visualize(visualize_frame, left_frame))
+        close_button.grid(row=0, column=0, pady=2)
+
+        save_button = ctk.CTkButton(visualize_buttons_frame, text="Salva", width=50, height=10, hover_color="green",
+                                            command=lambda: update_log(log, visualize_text, visualize_frame, left_frame))
+        save_button.grid(row=0, column=1, pady=2)
+
+
+def update_log(log, visualize_text, visualize_frame, left_frame):
+    with open(f"{logs_path}/{log}", "w") as file:
+        file.write(visualize_text.get("1.0","end-1c"))
+    visualize_frame.destroy()
+    refresh_logs(load_logs(), left_frame)
+    messagebox.showinfo("","Pagina salvata con successo!")
+
+def close_visualize(visualize_frame, left_frame):
+    visualize_frame.destroy()
+    refresh_logs(load_logs(), left_frame)
 
 # Funzione che salva il log delle giornate
 def save_log(data):
@@ -68,7 +112,7 @@ def load_logs():
         return file_contents
     except FileNotFoundError:
         return []
-    
+       
 #Funzione che calcola la qualità della giornata
 def calculate_quality(stress_level, satisfaction_level, 
                         mood_level, physical_activity, social_relations):
@@ -102,11 +146,7 @@ def create_main_frame(root):
     btn_continue.pack(side="top")
 
     return main_frame
-
-def back_to_main(root, diary_frame):
-    diary_frame.destroy()
-    main_frame = create_main_frame(root)
-    main_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
+    
 
 
 def main():
@@ -136,22 +176,16 @@ def show_diary_page(root, main_frame):
     main_frame.destroy()
 
     diary_frame = ctk.CTkFrame(root, corner_radius=20, bg_color="#D3E3F9")
-    diary_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
+    diary_frame.pack(side="top", expand=True, fill="both", pady=5, padx=5)
+    diary_frame.grid_columnconfigure(0, weight=1)
+    diary_frame.grid_columnconfigure(1, weight=1)
+    diary_frame.grid_rowconfigure(0, weight=1)
  
     #Top frame e  bottom frame
     left_frame = ctk.CTkScrollableFrame(diary_frame, corner_radius=20, fg_color="#D3E3F9")
-    left_frame.pack(side="left",expand=True, fill="both", padx=5, pady=5)
+    left_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
     right_frame = ctk.CTkFrame(diary_frame, corner_radius=20, fg_color="#D3E3F9")
-    right_frame.pack(side="right",expand=True, fill="both", padx=5, pady=5)
-
-
-    # Frame in alto a sinistra
-    top_left_frame = ctk.CTkScrollableFrame(left_frame, corner_radius=15, fg_color="#D3E3F9")
-    top_left_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
-
-    # Frame in basso a sinistra
-    bottom_left_frame = ctk.CTkFrame(left_frame, corner_radius=15, fg_color="#D3E3F9")
-    bottom_left_frame.pack(side="bottom",expand=True, fill="both", padx=5, pady=5)
+    right_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
     # Frame in alto a destra
     top_right_frame = ctk.CTkFrame(right_frame, corner_radius=15, fg_color="#D3E3F9")
@@ -160,7 +194,13 @@ def show_diary_page(root, main_frame):
     # Frame in basso a destra
     bottom_right_frame = ctk.CTkFrame(right_frame, corner_radius=15, fg_color="#D3E3F9")
     bottom_right_frame.pack(side="bottom",expand=True, fill="both", padx=5, pady=5)
-
+    bottom_right_frame.grid_rowconfigure(0, weight=1)
+    bottom_right_frame.grid_rowconfigure(1, weight=1)
+    bottom_right_frame.grid_rowconfigure(2, weight=1)
+    bottom_right_frame.grid_rowconfigure(3, weight=1)
+    bottom_right_frame.grid_rowconfigure(4, weight=1)
+    bottom_right_frame.grid_columnconfigure(0, weight=1)
+    bottom_right_frame.grid_columnconfigure(1, weight=1)
     #Creo un frame per ogni valutazione
     stress_frame = ctk.CTkFrame(bottom_right_frame, corner_radius=15, fg_color="#D3E3F9")
     stress_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
@@ -201,11 +241,7 @@ def show_diary_page(root, main_frame):
     #Log delle precedenti pagine di diario 
     #logs è un array di stringhe che rappresentano le pagine del diario
     logs = load_logs()
-
-    #Carico le valutazioni
-    ratings = load_ratings()
-    logs = load_logs()
-    refresh_logs(logs, ratings, left_frame)
+    refresh_logs(logs,left_frame)
     
     #Area di inserimento del diario
     diary_entry = ctk.CTkTextbox(top_right_frame, border_color="#D3E3F9", 
@@ -243,35 +279,35 @@ def show_diary_page(root, main_frame):
 
 
     #Slider e labels per la soddisfazione
-    satisfaction_label = ctk.CTkLabel(satisfaction_frame, textvariable=text_s, font=("Helvetica", 12))
+    satisfaction_label = ctk.CTkLabel(satisfaction_frame, textvariable=text_s, font=("Helvetica", 14))
     satisfaction_label.grid(row=0, column=1, pady=5)
     satisfaction_slider = ctk.CTkSlider(satisfaction_frame, from_=0, to=10, number_of_steps=10, command=mostra_s_val)
     satisfaction_slider.grid(row=0, column=2, pady=5)
     satisfaction_slider.set(0)
 
     #Slider e labels per il mood
-    mood_label = ctk.CTkLabel(mood_frame, textvariable=text_m, font=("Helvetica", 12))
+    mood_label = ctk.CTkLabel(mood_frame, textvariable=text_m, font=("Helvetica", 14))
     mood_label.grid(row=0, column=1, pady=5)
     mood_slider = ctk.CTkSlider(mood_frame, from_=0, to=10, number_of_steps=10, command=mostra_m_val)
     mood_slider.grid(row=0, column=2, pady=5)
     mood_slider.set(0)
 
     #Slider e labels per lo stress
-    stress_label = ctk.CTkLabel(stress_frame, textvariable=text_st, font=("Helvetica", 12))
+    stress_label = ctk.CTkLabel(stress_frame, textvariable=text_st, font=("Helvetica", 14))
     stress_label.grid(row=0, column=1, pady=5)
     stress_slider = ctk.CTkSlider(stress_frame, from_=0, to=10, number_of_steps=10, command=mostra_st_val)
     stress_slider.grid(row=0, column=2, pady=5)
     stress_slider.set(0)
 
     #Slider e labels per le attività fisiche
-    ph_act_label = ctk.CTkLabel(ph_act_frame, textvariable=text_pa, font=("Helvetica", 12))
+    ph_act_label = ctk.CTkLabel(ph_act_frame, textvariable=text_pa, font=("Helvetica", 14))
     ph_act_label.grid(row=0, column=1, pady=5)
     ph_act_slider = ctk.CTkSlider(ph_act_frame, from_=0, to=10, number_of_steps=10, command=mostra_pa_val)
     ph_act_slider.grid(row=0, column=2, pady=5)
     ph_act_slider.set(0)
 
     #Slider e labels per le relazioni sociali
-    social_label = ctk.CTkLabel(social_frame, textvariable=text_so, font=("Helvetica", 12))
+    social_label = ctk.CTkLabel(social_frame, textvariable=text_so, font=("Helvetica", 14))
     social_label.grid(row=0, column=1, pady=5)
     social_slider = ctk.CTkSlider(social_frame, from_=0, to=10, number_of_steps=10, command=mostra_so_val)
     social_slider.grid(row=0, column=2, pady=5)
@@ -315,7 +351,7 @@ def show_diary_page(root, main_frame):
 
             save_log(log)
             logs = load_logs()
-            refresh_logs(logs, quality_of_day, left_frame)
+            refresh_logs(logs, left_frame)
             
             
             #update_graph(canvas, fig, load_ratings())
