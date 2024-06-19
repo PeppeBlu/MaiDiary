@@ -15,26 +15,34 @@ def refresh_logs(logs, ratings, left_frame):
     for widget in left_frame.winfo_children():
         widget.destroy()
     for log in logs:    
-        log_text = ctk.CTkTextbox(left_frame, border_color="#D3E3F9", height=200,
+        log_frame = ctk.CTkFrame(left_frame, corner_radius=15, fg_color="#D3E3F9")
+        log_frame.pack(side="top", expand=True, fill="both", padx=2, pady=5)
+
+        log_text = ctk.CTkTextbox(log_frame, border_color="#D3E3F9", height=200,
                                   corner_radius=15, scrollbar_button_color="#D3E3F9")
-        log_text.pack(expand=True,side="top", fill="both", padx=2, pady=5)
-
-        erase_button = ctk.CTkButton(left_frame, text="Cancella", width=10, height=2, fg_color="blue", hover_color="red",
-                                        command=lambda: delete_log())
-        erase_button.pack(side="top", pady=5)
-
-        def delete_log():
-            if messagebox.askyesno("","Vuoi davvero eliminare la pagina?"):
-                os.remove(f"{logs_path}/{log}")
-                log_text.destroy()
-                erase_button.destroy()
-            
-            
+        log_text.pack(expand=True,side="left", fill="both", padx=2, pady=5)
 
         with open(f"{logs_path}/{log}", "r") as file:
             log_content = file.read()
+            log_text.insert(tk.END, log_content + "\n")
 
-        log_text.insert(tk.END, log_content + "\n")
+        erase_button = ctk.CTkButton(log_frame, text="Cancella", width=10, height=2, fg_color="blue", hover_color="red",
+                                            command=lambda: delete_log(log_frame))
+        erase_button.pack(side="right", padx=5, pady=5)
+
+        
+                
+
+
+    def delete_log(log_frame):
+        if messagebox.askyesno("","Vuoi davvero eliminare la pagina?"):
+                
+            for widget in log_frame.winfo_children():
+                widget.destroy()
+            log_frame.destroy() 
+            logs = load_logs()
+            refresh_logs(logs, ratings, left_frame)
+            messagebox.showinfo("","Pagina eliminata con successo!")
 
 def load_ratings():
     try:
@@ -45,12 +53,12 @@ def load_ratings():
 
 # Funzione che salva il log delle giornate
 def save_log(data):
-    timestamp = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    timestamp = datetime.datetime.now().strftime("%d-%m-%Y, %H-%M-%S")
     with open(f"{logs_path}/{timestamp}.txt", "w") as file:
         file.write(data)
 
 # Funzione che carica il log delle giornate
-def load_log():
+def load_logs():
     try:
         file_contents = {}
         for entry in os.scandir(logs_path):
@@ -136,6 +144,7 @@ def show_diary_page(root, main_frame):
     right_frame = ctk.CTkFrame(diary_frame, corner_radius=20, fg_color="#D3E3F9")
     right_frame.pack(side="right",expand=True, fill="both", padx=5, pady=5)
 
+
     # Frame in alto a sinistra
     top_left_frame = ctk.CTkScrollableFrame(left_frame, corner_radius=15, fg_color="#D3E3F9")
     top_left_frame.pack(side="top",expand=True, fill="both", padx=5, pady=5)
@@ -191,11 +200,11 @@ def show_diary_page(root, main_frame):
 
     #Log delle precedenti pagine di diario 
     #logs è un array di stringhe che rappresentano le pagine del diario
-    logs = load_log()
+    logs = load_logs()
 
     #Carico le valutazioni
     ratings = load_ratings()
-
+    logs = load_logs()
     refresh_logs(logs, ratings, left_frame)
     
     #Area di inserimento del diario
@@ -305,7 +314,7 @@ def show_diary_page(root, main_frame):
             f" Social_relations: {social_relations}\n\n{diary_text}")
 
             save_log(log)
-            logs = load_log()
+            logs = load_logs()
             refresh_logs(logs, quality_of_day, left_frame)
             
             
