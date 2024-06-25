@@ -1,0 +1,42 @@
+[info]
+name = "MaiDiary"
+version = "1.0"
+author = "Peppe Blunda"
+
+[paths]
+logs_path = "diary_logs"
+
+[dependencies]
+python_version = ">=3.6"
+tkinter = ">=8.6"
+customtkinter = ">=1.0"
+
+[project]
+name = "MaiDiary"
+version = "1.0"
+dependencies = []
+requires-python = ">=3.10.12"
+authors = [
+  {name = "Giuseppe Blunda", email = "giuseppe.blunda@edu.unife.it"}
+]
+maintainers = [
+  {name = "Giuseppe Blunda", email = "giuseppe.blunda@edu.unife.it"}
+]
+description = "MaiDiary è un'applicazione desktop per la gestione di un diario personale."
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["diario", "applicazione", "desktop", "python", "tkinter", "pagine"]
+
+[setup]
+# Eseguire `pip install -r requirements.txt` per installare le dipendenze necessarie
+
+[usage]
+# Esegui il programma con il seguente comando:
+# python maidiary.py
+
+[contributing]
+# Senti libero di contribuire con suggerimenti, segnalazioni di bug o nuove funzionalità.
+# Crea una pull request direttamente su GitHub.
+
+[license]
+# Questo progetto è concesso in licenza secondo i termini della Licenza MIT - vedere il file LICENSE.md per i dettagli.

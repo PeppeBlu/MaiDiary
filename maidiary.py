@@ -7,9 +7,8 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 
-VERSION = "1.0"
+VERSION = "1.2"
 LOGS_PATH = "diary_logs"
-RATINGS_FILE = "ratings_log.txt"
 
 ctk.set_appearance_mode("light")
 
@@ -142,7 +141,7 @@ def load_logs():
 
         if not os.path.exists(LOGS_PATH):
             os.makedirs(LOGS_PATH)
-            
+
         for entry in os.scandir(LOGS_PATH):
             if entry.is_file():
                 with open(entry.path, 'r', encoding="utf-8") as file:
