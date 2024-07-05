@@ -5,12 +5,35 @@ import os
 import tkinter as tk
 from tkinter import messagebox
 import customtkinter as ctk
-
+import base64
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.fernet import Fernet, InvalidToken
 
 VERSION = "1.2"
-LOGS_PATH = "diary_logs"
+
 
 ctk.set_appearance_mode("light")
+
+def generate_key(password, salt):
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+    return key
+
+
+def encrypt_data(data, key):
+    fernet = Fernet(key)
+    return fernet.encrypt(data.encode())
+
+
+def decrypt_data(data, key):
+    fernet = Fernet(key)
+    return fernet.decrypt(data).decode()
 
 
 def visualize_log(log, log_content, left_frame):
@@ -84,9 +107,10 @@ def refresh_logs(logs, left_frame):
                                   corner_radius=20, scrollbar_button_color="#D3E3F9")
         log_text.pack(expand=True, fill="both", padx=2, pady=5)
 
-        with open(f"{LOGS_PATH}/{log}", "r", encoding="utf-8") as file:
-            log_content = file.read()
-            log_text.insert(tk.END, log_content + "\n")
+        with open(f"{LOGS_PATH}/{log}", "rb") as file:
+            encrypted_log_content = file.read()
+            decrypted_log_content = decrypt_data(encrypted_log_content, key)
+            log_text.insert(tk.END, decrypted_log_content + "\n")
 
         delete_button = ctk.CTkButton(buttons_frame,
                                       text="Cancella",
@@ -101,7 +125,7 @@ def refresh_logs(logs, left_frame):
                                          command=lambda
                                          left_frame=left_frame,
                                          log=log,
-                                         log_content=log_content: visualize_log(log,
+                                         log_content=decrypted_log_content: visualize_log(log,
                                                                                 log_content,
                                                                                 left_frame))
         visualize_button.grid(row=0, column=1, pady=2)
@@ -118,9 +142,9 @@ def delete_log(log, left_frame):
 
 def update_log(log, visualize_text, visualize_frame, left_frame):
     """Funzione che aggiorna un log"""
-
-    with open(f"{LOGS_PATH}/{log}", "w", encoding="utf-8") as file:
-        file.write(visualize_text.get("1.0","end-1c"))
+    encrypted_data = encrypt_data(visualize_text.get("1.0", ctk.END), key)
+    with open(f"{LOGS_PATH}/{log}", "wb") as file:
+        file.write(encrypted_data)
     visualize_frame.destroy()
     refresh_logs(load_logs(), left_frame)
     messagebox.showinfo("","Pagina salvata con successo!")
@@ -129,8 +153,10 @@ def update_log(log, visualize_text, visualize_frame, left_frame):
 def save_log(data):
     """Funzione che salva un log sul file system"""
     timestamp = datetime.datetime.now().strftime("%d-%m-%Y, %H-%M-%S")
-    with open(f"{LOGS_PATH}/{timestamp}.txt", "w", encoding="utf-8") as file:
-        file.write(data)
+
+    encrypted_data = encrypt_data(data, key)
+    with open(f"{LOGS_PATH}/{timestamp}.txt", "wb") as file:
+        file.write(encrypted_data)
 
 
 def load_logs():
@@ -139,16 +165,17 @@ def load_logs():
     try:
         file_contents = {}
 
-        if not os.path.exists(LOGS_PATH):
-            os.makedirs(LOGS_PATH)
-
         for entry in os.scandir(LOGS_PATH):
             if entry.is_file():
-                with open(entry.path, 'r', encoding="utf-8") as file:
-                    file_contents[entry.name] = file.read()
+                with open(entry.path, 'rb') as file:
+                    encrypted_text = file.read()
+                    file_contents[entry.name] = decrypt_data(encrypted_text, key)
         return file_contents
     except FileNotFoundError:
         return []
+    except InvalidToken:
+        return []
+        
 
 
 def calculate_quality(satisfaction_level,
@@ -157,7 +184,7 @@ def calculate_quality(satisfaction_level,
                       physical_activity,
                       social_relations):
     """Funzione che calcola la qualità della giornata con pesi diversi per ogni fattore"""
-    
+
     # Definisco i pesi per ciascun fattore
     weights = {
         'satisfaction_level': 0.3,
@@ -166,17 +193,17 @@ def calculate_quality(satisfaction_level,
         'physical_activity': 0.15,
         'social_relations': 0.15
     }
-    
+
     #Calcolo il valore pesato per ciascun fattore
     weighted_stress = stress_level * weights['stress_level']
     weighted_satisfaction = satisfaction_level * weights['satisfaction_level']
     weighted_mood = mood_level * weights['mood_level']
     weighted_physical_activity = physical_activity * weights['physical_activity']
     weighted_social_relations = social_relations * weights['social_relations']
-    
+
     quality = (weighted_satisfaction + weighted_mood + weighted_physical_activity +
                weighted_social_relations + weighted_stress)
-    
+
     return quality
 
 
@@ -196,7 +223,7 @@ def create_main_frame(root):
 
     #Logo al programma
     logo_label = tk.Label(main_frame, image=root.logo_image)
-    logo_label.pack(side="top", pady=20)
+    logo_label.pack(side="top", pady=10)
 
     # Etichetta di benvenuto stampata a capo
     welcome_label = ctk.CTkLabel(main_frame,
@@ -204,6 +231,26 @@ def create_main_frame(root):
                                  font=("Helvetica", 16))
     welcome_label.pack(side="top", pady=10)
 
+    user_label = ctk.CTkLabel(main_frame,
+                                text="Username:",
+                                font=("Helvetica", 14))
+    user_label.pack(side="top", pady=5)
+
+    user_entry = ctk.CTkEntry(main_frame,
+                                width=300,
+                                font=("Helvetica", 14))
+    user_entry.pack(side="top", pady=5)
+
+    password_label = ctk.CTkLabel(main_frame,
+                                text="Password:",
+                                font=("Helvetica", 14))
+    password_label.pack(side="top", pady=5)
+
+    password_entry = ctk.CTkEntry(main_frame,
+                                width=300,
+                                font=("Helvetica", 14))
+    password_entry.pack(side="top", pady=5)
+    
     version_label = ctk.CTkLabel(main_frame,
                                  text=f"Versione {VERSION}",
                                  font=("Helvetica", 12))
@@ -211,11 +258,11 @@ def create_main_frame(root):
 
     # Pulsante per accedere alla pagina di inserimento
     btn_continue = ctk.CTkButton(main_frame,
-                                 width=250, height=50, text_color="#D3E3F9",
+                                 width=250, height=50, text_color="white",
                                  text="Go to your MaiDiary",
-                                 command=lambda: show_diary_page(root, main_frame))
+                                 command=lambda: show_diary_page(root, main_frame, user_entry, password_entry))
     btn_continue.configure(font=("Helvetica", 20))
-    btn_continue.pack(side="top")
+    btn_continue.pack(side="top", pady=10)
 
     return main_frame
 
@@ -242,8 +289,32 @@ def main():
     root.mainloop()
 
 
-def show_diary_page(root, main_frame):
+def show_diary_page(root, main_frame, user_entry, password_entry):
     """Funzione che mostra la pagina di inserimento del diario"""
+
+    #memorizza localmente nome utente e password
+    global LOGS_PATH
+    global password
+    username = user_entry.get()
+    password = password_entry.get()
+    LOGS_PATH  = f"users/{username}_diary"
+    salt = username.encode()
+    global key
+    key = generate_key(password, salt)
+    
+    #controllo se i campi sono vuoti
+    if username == "" or password == "":
+        messagebox.showwarning("Errore", "È necessario compilare tutti i campi!")
+        return
+    
+    if not os.path.exists(f"users/{username}_diary"):
+        os.makedirs(f"users/{username}_diary")
+
+    if load_logs() == []:
+        messagebox.showwarning("Errore", "Password o username errati!")
+        return
+
+
 
     main_frame.destroy()
 
@@ -310,7 +381,7 @@ def show_diary_page(root, main_frame):
     #Funzioni per mostrare i valori dei cursori
     def mostra_s_val(value):
         text_s.set(f"Soddisfazione: {int(satisfaction_slider.get())}")
-        
+
     def mostra_st_val(value):
         text_st.set(f"Stress: {int(stress_slider.get())}")
 
