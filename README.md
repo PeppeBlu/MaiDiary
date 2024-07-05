@@ -11,7 +11,7 @@ Maidiary consente agli utenti di registrare le loro giornate includendo valutazi
 - **Gestione dei Log**: Visualizza, modifica e elimina le voci di diario.
 - **Valutazioni Giornaliere**: Calcola automaticamente una valutazione complessiva della giornata in base ai parametri inseriti.
 - **Interfaccia Personalizzata**: Utilizza customtkinter per un aspetto visivo migliorato e personalizzato.
-
+- **Criptaggio dei dati**: Inserendo le credenziali di accesso, i dati vengono criptati e sono visualizzabili solo dall'interno del programma, effettuando l'accesso
 ## Requisiti
 
 - Python 3.6 o versione successiva
