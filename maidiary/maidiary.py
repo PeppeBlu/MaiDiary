@@ -10,7 +10,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 from cryptography.fernet import Fernet, InvalidToken
 
-VERSION = "1.4"
+VERSION = "1.0"
 
 
 ctk.set_appearance_mode("light")
