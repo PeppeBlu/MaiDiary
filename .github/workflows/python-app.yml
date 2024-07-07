@@ -34,9 +34,12 @@ jobs:
       run: |
         pylint maidiary.py --exit-zero
 
-    - name: Test with pytest
+    - name: Test with coverage and pytest
       run: |
-        pytest
+        coverage run -m pytest
+        coverage report -m
+        coverage html
+        
 
     - name: Building app
       run: |

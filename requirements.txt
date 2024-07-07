@@ -3,3 +3,4 @@ customtkinter
 pytest
 pylint
 hypothesis
+coverage
