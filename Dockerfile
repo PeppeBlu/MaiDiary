@@ -7,7 +7,6 @@ WORKDIR /MaiDiary
 # Copia il file requirements.txt e installa le dipendenze
 COPY requirements.txt .
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
 RUN python -m pip install cryptography
 RUN python -m pip install customtkinter
 RUN python -m pip install pytest
