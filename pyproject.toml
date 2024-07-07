@@ -11,6 +11,8 @@ python_version = ">=3.6"
 tkinter = ">=8.6"
 customtkinter = ">=1.0"
 
+
+
 [project]
 name = "MaiDiary"
 version = "1.0"
