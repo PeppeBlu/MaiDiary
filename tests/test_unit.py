@@ -5,7 +5,7 @@ from cryptography.fernet import InvalidToken
 from hypothesis import given, strategies as st
 
 # Importiamo le funzioni dal file principale
-from maidiary import generate_key, encrypt_data, decrypt_data, calculate_quality
+from maidiary.maidiary import generate_key, encrypt_data, decrypt_data, calculate_quality
 
 class TestMaidiary(unittest.TestCase):
 

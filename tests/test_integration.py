@@ -1,7 +1,7 @@
 import unittest
 import os
 import datetime
-from maidiary import generate_key, encrypt_data, load_logs
+from maidiary.maidiary import generate_key, encrypt_data, load_logs
 
 
 
