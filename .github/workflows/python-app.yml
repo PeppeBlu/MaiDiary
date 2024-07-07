@@ -29,13 +29,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade build
         python -m pip install -r requirements.txt
-        
-#python -m pip install cryptography
-#python -m pip install customtkinter
-#python -m pip install pytest
-#python -m pip install pylint
-#python -m pip install hypothesis        
-
+              
     - name: Lint with pylint
       run: |
         pylint maidiary.py --exit-zero
@@ -51,7 +45,7 @@ jobs:
     - name: Docker Login
       uses: docker/login-action@v3
       with: 
-        username: peppeblu
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
     - name: Docker Build and Push
@@ -61,4 +55,8 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: peppeblu/maidiary:latest
+
+    - name: Image Digest
+      run: echo ${{ steps.docker_build.outputs.digest }}
+
         
