@@ -12,6 +12,7 @@ from cryptography.fernet import Fernet, InvalidToken
 
 VERSION = "1.4"
 
+
 ctk.set_appearance_mode("light")
 
 def generate_key(password, salt):
