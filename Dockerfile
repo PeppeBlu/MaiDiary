@@ -2,7 +2,7 @@
 FROM python
 
 # Imposta il working directory
-WORKDIR /app
+WORKDIR /MaiDiary
 
 # Copia il file requirements.txt e installa le dipendenze
 COPY requirements.txt .
