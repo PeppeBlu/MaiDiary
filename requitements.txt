@@ -1,1 +1,5 @@
-
+cryptography
+customtkinter
+pytest
+pylint
+hypothesis
