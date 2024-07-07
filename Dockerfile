@@ -8,6 +8,11 @@ WORKDIR /MaiDiary
 COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+RUN python -m pip install cryptography
+RUN python -m pip install customtkinter
+RUN python -m pip install pytest
+RUN python -m pip install pylint
+RUN python -m pip install hypothesis
 
 # Copia il contenuto della directory corrente nella working directory
 COPY . .
