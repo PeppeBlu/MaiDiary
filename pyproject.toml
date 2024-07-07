@@ -1,17 +1,20 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[options]
+packages = ["maidiary"]
+package_dir = ""
+
 [info]
 name = "MaiDiary"
 version = "1.0"
 author = "Peppe Blunda"
 
-[paths]
-logs_path = "diary_logs"
-
 [dependencies]
-python_version = ">=3.6"
+python_version = ">=3.10.12"
 tkinter = ">=8.6"
-customtkinter = ">=1.0"
-
-
+customtkinter = ">=5.2.2"
 
 [project]
 name = "MaiDiary"
@@ -28,9 +31,6 @@ description = "MaiDiary è un'applicazione desktop per la gestione di un diario 
 readme = "README.md"
 license = {file = "LICENSE"}
 keywords = ["diario", "applicazione", "desktop", "python", "tkinter", "pagine"]
-
-[setup]
-# Eseguire `pip install -r requirements.txt` per installare le dipendenze necessarie
 
 [usage]
 # Esegui il programma con il seguente comando:
