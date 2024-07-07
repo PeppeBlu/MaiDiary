@@ -133,8 +133,7 @@ def delete_log(log, left_frame):
 
     if messagebox.askyesno("", "Vuoi davvero eliminare la pagina?"):
         os.remove(f"{LOGS_PATH}/{log}")
-        logs = load_logs(LOGS_PATH, key)
-        refresh_logs(logs, left_frame)
+        refresh_logs(load_logs(LOGS_PATH, key), left_frame)
 
 
 def update_log(log, visualize_text, visualize_frame, left_frame):
@@ -494,8 +493,7 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
             f"\n{diary_text}")
 
             save_log(log)
-            logs = load_logs(LOGS_PATH, key)
-            refresh_logs(logs, left_frame)
+            refresh_logs(load_logs(LOGS_PATH, key), left_frame)
             diary_entry.delete("1.0", ctk.END)
 
             #Reset degli slider
