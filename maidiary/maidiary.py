@@ -314,10 +314,11 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
         else:
             return
 
-    if load_logs(LOGS_PATH, key) == []:
+    logs = load_logs(LOGS_PATH, key)
+
+    if logs == []:
         messagebox.showwarning("Errore", "Password o username errati!")
         return
-
 
 
     main_frame.destroy()
@@ -334,6 +335,8 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
                                width=390)
     right_frame.pack(side="right", expand=True, fill="both", padx=5, pady=5)
 
+    # Faccio il refresh dei log
+    refresh_logs(logs,left_frame)
 
     # Frame in alto a destra
     top_right_frame = ctk.CTkFrame(right_frame,
@@ -355,11 +358,6 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
     bottom_right_frame.grid_rowconfigure(5, weight=1)
     bottom_right_frame.grid_columnconfigure(0, weight=1)
     bottom_right_frame.grid_columnconfigure(1, weight=1)
-
-
-    #Log delle precedenti pagine di diario
-    logs = load_logs(LOGS_PATH, key)
-    refresh_logs(logs,left_frame)
 
     #Area di inserimento del diario
     diary_entry = ctk.CTkTextbox(top_right_frame,
