@@ -5,7 +5,6 @@ FROM python
 WORKDIR /MaiDiary
 
 # Copia il file requirements.txt e installa le dipendenze
-COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN python -m pip install cryptography
 RUN python -m pip install customtkinter
