@@ -148,7 +148,7 @@ def update_log(log, visualize_text, visualize_frame, left_frame):
 
 def save_log(data):
     """Funzione che salva un log sul file system"""
-    timestamp = datetime.datetime.now().strftime("%d-%m-%Y, %H-%M-%S")
+    timestamp = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
 
     encrypted_data = encrypt_data(data, key)
     with open(f"{LOGS_PATH}/{timestamp}.txt", "wb") as file:
