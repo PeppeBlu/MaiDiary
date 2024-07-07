@@ -88,7 +88,8 @@ def refresh_logs(logs, left_frame):
 
     for widget in left_frame.winfo_children():
         widget.destroy()
-    for log in logs:
+    
+    for log_name, decrypted_log_content in logs.items():
         log_frame = ctk.CTkFrame(left_frame,
                                  corner_radius=20,
                                  fg_color="#D3E3F9")
@@ -106,16 +107,12 @@ def refresh_logs(logs, left_frame):
                                   height=200, width=300, font=("Helvetica", 13),
                                   corner_radius=20, scrollbar_button_color="#D3E3F9")
         log_text.pack(expand=True, fill="both", padx=2, pady=5)
-
-        with open(f"{LOGS_PATH}/{log}", "rb") as file:
-            encrypted_log_content = file.read()
-            decrypted_log_content = decrypt_data(encrypted_log_content, key)
-            log_text.insert(tk.END, decrypted_log_content + "\n")
+        log_text.insert(tk.END, decrypted_log_content + "\n")
 
         delete_button = ctk.CTkButton(buttons_frame,
                                       text="Cancella",
                                       width=100, height=30, hover_color="red",
-                                      command=lambda log=log: delete_log(log, left_frame))
+                                      command=lambda log=log_name: delete_log(log, left_frame))
         delete_button.grid(row=0, column=0, pady=2)
 
 
@@ -124,7 +121,7 @@ def refresh_logs(logs, left_frame):
                                          width=100, height=30, hover_color="green",
                                          command=lambda
                                          left_frame=left_frame,
-                                         log=log,
+                                         log=log_name,
                                          log_content=decrypted_log_content: visualize_log(log,
                                                                                 log_content,
                                                                                 left_frame))
