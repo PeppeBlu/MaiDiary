@@ -44,8 +44,8 @@ class TestEncryptionDecryptionFunctions(unittest.TestCase):
 
 
     def test_invalid_data_to_decrypt(self):
-        with self.assertRaises(TypeError):
-            decrypt_data("not encrypted", self.key)
+        with self.assertRaises(InvalidToken):
+            decrypt_data("not encrypted".encode(), self.key)
 
 
 
