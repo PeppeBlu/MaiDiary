@@ -146,13 +146,15 @@ def update_log(log, visualize_text, visualize_frame, left_frame):
     messagebox.showinfo("","Pagina salvata con successo!")
 
 
-def save_log(data):
+def save_log(data, key, LOGS_PATH):
     """Funzione che salva un log sul file system"""
     timestamp = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
 
     encrypted_data = encrypt_data(data, key)
     with open(f"{LOGS_PATH}/{timestamp}.txt", "wb") as file:
         file.write(encrypted_data)
+
+    return f"{LOGS_PATH}/{timestamp}.txt"
 
 
 def load_logs(LOGS_PATH, key):
@@ -453,12 +455,12 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
     btn_submit = ctk.CTkButton(bottom_right_frame,
                                width = 140, height = 28,
                                text_color = "#D3E3F9", text="INVIA",
-                               command=lambda: submit_entry())
+                               command=lambda: submit_entry(key,LOGS_PATH))
     btn_submit.grid(row=5, column=0, columnspan=2, pady=5)
     btn_submit.configure(font=("Helvetica", 14))
 
 
-    def submit_entry():
+    def submit_entry(key,LOGS_PATH):
         date_str = datetime.datetime.now().strftime("%d/%m/%Y, ore %H:%M:%S")
         diary_text = diary_entry.get("1.0", ctk.END).strip()
         stress_level = int(stress_slider.get())
@@ -492,7 +494,7 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
             f" - Attività Fisica: {physical_activity}\n - Relazioni Sociali: {social_relations}\n"
             f"\n{diary_text}")
 
-            save_log(log)
+            path = save_log(log, key, LOGS_PATH)
             refresh_logs(load_logs(LOGS_PATH, key), left_frame)
             diary_entry.delete("1.0", ctk.END)
 

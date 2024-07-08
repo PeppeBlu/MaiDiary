@@ -39,6 +39,9 @@ class TestMaidiary(unittest.TestCase):
         quality = calculate_quality(10, 10, 10, 10, 10)
         self.assertEqual(quality, 10)
 
+        quality = calculate_quality(7, 4, 9, 8, 10)
+        self.assertNotEqual(quality, 10)
+
         quality = calculate_quality(0, 0, 0, 0, 0)
         self.assertEqual(quality, 0)
 
