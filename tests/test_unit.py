@@ -5,7 +5,7 @@ from cryptography.fernet import InvalidToken
 from hypothesis import given, strategies as st
 
 # Importiamo le funzioni dal file principale
-from maidiary.maidiary import generate_key, encrypt_data, decrypt_data, calculate_quality
+from maidiary.maidiary import generate_key, encrypt_data, decrypt_data, calculate_quality, refresh_logs, load_logs, save_log, delete_log
 
 class TestMaidiary(unittest.TestCase):
 
@@ -29,6 +29,11 @@ class TestMaidiary(unittest.TestCase):
         encrypted_data = encrypt_data(self.data, self.key)
         with self.assertRaises(InvalidToken):
             decrypt_data(encrypted_data, invalid_key)
+
+    def test_invalid_data_to_decrypt(self):
+        with self.assertRaises(TypeError):
+            decrypt_data("not encrypted", self.key)
+
 
     def test_calculate_quality(self):
         quality = calculate_quality(10, 10, 10, 10, 10)

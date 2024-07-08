@@ -168,9 +168,9 @@ def load_logs(LOGS_PATH, key):
                     file_contents[entry.name] = decrypt_data(encrypted_text, key)
         return file_contents
     except FileNotFoundError:
-        return []
+        return {}
     except InvalidToken:
-        return []
+        return {}
         
 
 def calculate_quality(satisfaction_level,

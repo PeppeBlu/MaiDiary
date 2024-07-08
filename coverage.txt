@@ -1,0 +1,10 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-8.2.0, pluggy-1.5.0
+rootdir: /mnt/c/Users/Peppe/Desktop/Programming 2024/MaiDiary/MaiDiary
+configfile: pyproject.toml
+plugins: hypothesis-6.102.5
+collected 5 items
+
+tests/test_unit.py .....                                                 [100%]
+
+============================== 5 passed in 1.25s ===============================
