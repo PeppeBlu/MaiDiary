@@ -1,8 +1,11 @@
+from pathlib import Path
+import shutil
+import tempfile
 import unittest
 import datetime
 import os
 from cryptography.fernet import InvalidToken
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open, MagicMock
 from maidiary.maidiary import encrypt_data, decrypt_data, generate_key, calculate_quality, load_logs, save_log
 
 
@@ -66,49 +69,80 @@ class TestCalculateQuality(unittest.TestCase):
 class TestSaveLog(unittest.TestCase):
 
     def setUp(self):
+        self.temp_dir = tempfile.mkdtemp()  # Crea una directory temporanea
         self.username = "test_user"
         self.password = "test_password"
         self.salt = self.username.encode()
         self.key = generate_key(self.password, self.salt)
-        self.LOGS_PATH = f"users/{self.username}_diary"
+        self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
+        self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  # Assicurati che il percorso esista
         self.data = "secret test data"
 
-    @patch("builtins.open", new_callable=mock_open)        
-    def test_save_log(self, mock_open):
-        log_path = save_log(self.data, self.key, self.LOGS_PATH)
-        mock_open.assert_called_with(log_path, "wb")
-        mock_open().write.assert_called_with(encrypt_data(self.data, self.key))
+    def tearDown(self):
+        # Pulisci la directory temporanea dopo ogni test
+        for item in Path(self.temp_dir).glob("*"):
+            if item.is_dir():
+                shutil.rmtree(item)
+            else:
+                item.unlink()
 
-        #apro il file e controllo che i dati siano stati scritti correttamente
+    def test_save_log(self):
+        # Assumi che save_log restituisca il percorso del file come stringa
+        log_path = save_log(self.data, self.key, str(self.LOGS_PATH))
+        
+        # Apri il file e controlla che i dati siano stati scritti correttamente
         with open(log_path, "rb") as file:
             read_data = file.read()
-            if read_data != "":
-                self.assertEqual(self.data, decrypt_data(read_data, self.key))
+            self.assertNotEqual(read_data, "")  # Assicurati che il file non sia vuoto
+            self.assertEqual(self.data, decrypt_data(read_data, self.key))
             
 
 
 class TestLoadLogs(unittest.TestCase):
 
     def setUp(self):
+        # Crea una directory temporanea
+        self.temp_dir = tempfile.mkdtemp()
         self.username = "test_user"
         self.password = "test_password"
         self.salt = self.username.encode()
         self.key = generate_key(self.password, self.salt)
-        self.LOGS_PATH = f"users/{self.username}_diary"
-        self.data = "secret test data"
+        self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
+        self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  # Crea la struttura di directory necessaria
 
-    @patch("os.scandir")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_load_logs(self, mock_open, mock_scandir):
-        log_path = save_log(self.data, self.key, self.LOGS_PATH)
+        # Prepara i dati e salva i file di log crittografati
+        self.data1 = encrypt_data("secret test data 1", self.key)
+        self.data2 = encrypt_data("secret test data 2", self.key)
+        self.file1 = self.LOGS_PATH / "log1.txt"
+        self.file2 = self.LOGS_PATH / "log2.txt"
 
-        #uso mock:scandir per simulare la presenza di un file
-        mock_scandir.return_value = [log_path]
-        logs = load_logs(self.LOGS_PATH, self.key)
+        # Scrive i dati crittografati nei file
+        with open(self.file1, "wb") as file:
+            file.write(self.data1)
+        with open(self.file2, "wb") as file:
+            file.write(self.data2)
 
-        #controllo che logs sia un dizionario 
-        self.assertIsInstance(logs, dict)
+    def tearDown(self):
+        # Rimuove la directory temporanea e tutto il suo contenuto
+        shutil.rmtree(self.temp_dir)
 
+    def test_load_logs(self):
+        # Esegue la funzione da testare
+        logs = load_logs(str(self.LOGS_PATH), self.key)
+
+        # Verifica che i contenuti decrittografati corrispondano ai dati originali
+        with open(self.file1, "rb") as file:
+            expected_data1 = decrypt_data(file.read(), self.key)
+        with open(self.file2, "rb") as file:
+            expected_data2 = decrypt_data(file.read(), self.key)
+
+        # Usa entry.name (nome del file) per accedere ai valori nel dizionario
+        self.assertEqual(logs[self.file1.name], expected_data1)
+        self.assertEqual(logs[self.file2.name], expected_data2)
+
+        # Verifica che tutti i file previsti siano presenti nel dizionario logs
+        self.assertTrue(self.file1.name in logs)
+        self.assertTrue(self.file2.name in logs)
 
 
        

@@ -1,3 +1,5 @@
+import shutil
+import tempfile
 import unittest
 import os
 import datetime
@@ -13,46 +15,53 @@ class TestMaidiaryIntegration(unittest.TestCase):
         self.salt = self.username.encode()
         self.key = generate_key(self.password, self.salt)
         self.LOGS_PATH = f"users/{self.username}_diary"
-        os.makedirs(self.LOGS_PATH, exist_ok=True)
+        self.logs_path = tempfile.mkdtemp()
 
     def tearDown(self):
-        for file in os.scandir(self.LOGS_PATH):
-            os.remove(file.path)
-        os.rmdir(self.LOGS_PATH)
+        # Pulisci la directory temporanea dopo ogni test
+        shutil.rmtree(self.logs_path)
 
     def test_save_and_load_log(self):
         data = "Test diary entry"
         encrypted_data = encrypt_data(data, self.key)
         timestamp = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-        log_path = f"{self.LOGS_PATH}/{timestamp}.txt"
+        file_name = f"{timestamp}.txt"
+        log_path = f"{self.logs_path}/{file_name}"
 
         with open(log_path, "wb") as file:
             file.write(encrypted_data)
 
-        logs = load_logs(self.LOGS_PATH, self.key)
-        self.assertIn(f"{timestamp}.txt", logs)
-        self.assertEqual(logs[f"{timestamp}.txt"], data)
+        logs = load_logs(self.logs_path, self.key)
+        self.assertIn(file_name, logs)
+        self.assertEqual(logs[file_name], data)
 
     def test_save_and_load_multiple_logs(self):
-        data = "Test diary entry"
-        encrypted_data = encrypt_data(data, self.key)
-        timestamp = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-        log_path = f"{self.LOGS_PATH}/{timestamp}.txt"
+        # Primo log
+        data1 = "Test diary entry"
+        encrypted_data1 = encrypt_data(data1, self.key)
+        timestamp1 = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+        file_name1 = f"{timestamp1}.txt"
+        log_path1 = f"{self.logs_path}/{file_name1}"
 
-        with open(log_path, "wb") as file:
-            file.write(encrypted_data)
+        with open(log_path1, "wb") as file:
+            file.write(encrypted_data1)
 
-        data = "Another test diary entry"
-        encrypted_data = encrypt_data(data, self.key)
-        timestamp = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-        log_path = f"{self.LOGS_PATH}/{timestamp}.txt"
+        # Attendi per garantire un timestamp univoco
+        os.system("sleep 1")
 
-        with open(log_path, "wb") as file:
-            file.write(encrypted_data)
+        # Secondo log
+        data2 = "Another test diary entry"
+        encrypted_data2 = encrypt_data(data2, self.key)
+        timestamp2 = datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+        file_name2 = f"{timestamp2}.txt"
+        log_path2 = f"{self.logs_path}/{file_name2}"
 
-        logs = load_logs(self.LOGS_PATH, self.key)
-        self.assertIn(f"{timestamp}.txt", logs)
-        self.assertEqual(logs[f"{timestamp}.txt"], data)
+        with open(log_path2, "wb") as file:
+            file.write(encrypted_data2)
+
+        logs = load_logs(self.logs_path, self.key)
+        self.assertIn(file_name2, logs)
+        self.assertEqual(logs[file_name2], data2)
         self.assertEqual(len(logs), 2)
         
 
