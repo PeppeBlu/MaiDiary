@@ -49,7 +49,6 @@ class TestEncryptionDecryptionFunctions(unittest.TestCase):
 
 
 
-
 class TestCalculateQuality(unittest.TestCase):
 
     def test_calculate_quality_max(self):
