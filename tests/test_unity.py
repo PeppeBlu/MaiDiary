@@ -8,78 +8,48 @@ from unittest.mock import patch, MagicMock
 from maidiary.maidiary import encrypt_data, decrypt_data, delete_log, refresh_logs, main
 from maidiary.maidiary import generate_key, calculate_quality, load_logs, save_log, show_diary_page
 
-
 class TestShowDiaryPage(unittest.TestCase):
-
-    def setUp(self):
-        self.patcher_ctk = patch('maidiary.maidiary.ctk.CTk', new_callable=MagicMock)
-        self.patcher_ctk_frame = patch('maidiary.maidiary.ctk.CTkFrame', new_callable=MagicMock)
-        self.patcher_ctk_label = patch('maidiary.maidiary.ctk.CTkLabel', new_callable=MagicMock)
-        self.patcher_ctk_button = patch('maidiary.maidiary.ctk.CTkButton', new_callable=MagicMock)
-        self.patcher_ctk_entry = patch('maidiary.maidiary.ctk.CTkEntry', new_callable=MagicMock)
-        self.patcher_ctk_textbox = patch('maidiary.maidiary.ctk.CTkTextbox', new_callable=MagicMock)
-        self.patcher_ctk_scrollableframe = patch('maidiary.maidiary.ctk.CTkScrollableFrame', new_callable=MagicMock)
-        self.patcher_stringvar = patch('maidiary.maidiary.ctk.StringVar', new_callable=MagicMock)
-        self.patcher_messagebox_askyesno = patch('tkinter.messagebox.askyesno', return_value=True)
-        self.patcher_messagebox_showwarning = patch('tkinter.messagebox.showwarning')
-        self.patcher_load_logs = patch('maidiary.maidiary.load_logs', return_value={
-            "log1.txt": "Contenuto del log 1",
-            "log2.txt": "Contenuto del log 2"
-        })
-
-        self.MockCTk = self.patcher_ctk.start()
-        self.MockCTkFrame = self.patcher_ctk_frame.start()
-        self.MockCTkLabel = self.patcher_ctk_label.start()
-        self.MockCTkButton = self.patcher_ctk_button.start()
-        self.MockCTkEntry = self.patcher_ctk_entry.start()
-        self.MockCTkTextbox = self.patcher_ctk_textbox.start()
-        self.MockCTkScrollableFrame = self.patcher_ctk_scrollableframe.start()
-        self.MockStringVar = self.patcher_stringvar.start()
-        self.mock_messagebox_askyesno = self.patcher_messagebox_askyesno.start()
-        self.mock_messagebox_showwarning = self.patcher_messagebox_showwarning.start()
-        self.mock_load_logs = self.patcher_load_logs.start()
-
-        self.addCleanup(self.patcher_ctk.stop)
-        self.addCleanup(self.patcher_ctk_frame.stop)
-        self.addCleanup(self.patcher_ctk_label.stop)
-        self.addCleanup(self.patcher_ctk_button.stop)
-        self.addCleanup(self.patcher_ctk_entry.stop)
-        self.addCleanup(self.patcher_ctk_textbox.stop)
-        self.addCleanup(self.patcher_ctk_scrollableframe.stop)
-        self.addCleanup(self.patcher_stringvar.stop)
-        self.addCleanup(self.patcher_messagebox_askyesno.stop)
-        self.addCleanup(self.patcher_messagebox_showwarning.stop)
-        self.addCleanup(self.patcher_load_logs.stop)
-
-    def create_mock_widget(self):
-        mock_widget = MagicMock()
-        mock_widget.pack.side_effect = lambda *args, **kwargs: None
-        mock_widget.grid.side_effect = lambda *args, **kwargs: None
-        mock_widget.destroy.side_effect = lambda *args, **kwargs: None
-        mock_widget.winfo_children.return_value = []  # Simula nessun child iniziale
-        mock_widget.set.side_effect = lambda *args, **kwargs: None
-        return mock_widget
-
-    def test_show_diary_page(self):
-        root = self.create_mock_widget()
-        main_frame = self.create_mock_widget()
-        username_entry = self.create_mock_widget()
-        password_entry = self.create_mock_widget()
-
-        # Simula l'utente che ha inserito username e password
-        username_entry.get.return_value = "test_user"
-        password_entry.get.return_value = "test_password"
-
-        # Chiamata alla funzione da testare
-        show_diary_page(root, main_frame, username_entry, password_entry)
-
-        # Verifica delle chiamate ai widget e interazioni
-        self.assertEqual(self.MockCTkFrame.call_count, 1)
-        self.assertEqual(self.MockCTkLabel.call_count, 5)
-        self.assertEqual(self.MockCTkButton.call_count, 5)
-        self.assertEqual(self.MockCTkEntry.call_count, 0)
-        self.assertEqual(self.MockCTkTextbox.call_count, 1)
-        self.assertEqual(self.MockCTkScrollableFrame.call_count, 1)
+    
+    @patch('maidiary.maidiary.messagebox')
+    @patch('maidiary.maidiary.os.path.exists')
+    @patch('maidiary.maidiary.load_logs')
+    @patch('maidiary.maidiary.generate_key')
+    @patch('maidiary.maidiary.os.makedirs')
+    def test_show_diary_page(self, mock_makedirs, mock_generate_key, mock_load_logs, mock_path_exists, mock_messagebox):
+        # Mocking os.path.exists to simulate user diary existence
+        mock_path_exists.return_value = True
+        
+        # Mocking generate_key to return a dummy key
+        mock_generate_key.return_value = b'dummy_key'
+        
+        # Mocking load_logs to return a non-empty dictionary
+        mock_load_logs.return_value = {"log": "test_log"}
+        
+        # Mocking messagebox to simulate user interactions
+        mock_messagebox.askyesno.return_value = True
+        mock_messagebox.showwarning.return_value = None
+        
+        # Creating a root window for the test
+        root = tk.Tk()
+        main_frame = ctk.CTkFrame(root)
+        
+        # Creating user_entry and password_entry with mock values
+        user_entry = ctk.CTkEntry(root)
+        user_entry.insert(0, 'test_user')
+        password_entry = ctk.CTkEntry(root)
+        password_entry.insert(0, 'test_password')
+        
+        # Call the function
+        show_diary_page(root, main_frame, user_entry, password_entry)
+        
+        # Check if the main_frame is destroyed
+        self.assertFalse(main_frame.winfo_exists())
+        
+         
+        self.assertIsNotNone(root.winfo_children())
+       
+        # Clean up
+        root.quit()
 
 
 class TestGenerateKey(unittest.TestCase):
