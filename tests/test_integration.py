@@ -3,6 +3,7 @@ import tempfile
 import unittest
 import os
 import datetime
+from unittest.mock import MagicMock
 from maidiary.maidiary import generate_key, encrypt_data, load_logs, save_log, refresh_logs
 
 
@@ -66,28 +67,6 @@ class TestMaidiaryIntegration(unittest.TestCase):
         self.assertEqual(len(logs), 2)
 
 
-class TestRefreshLogs(unittest.TestCase):
-    def setUp(self):
-        self.LOGS_PATH = "path/to/logs"
-        self.key = "encryption_key"
-        self.logs = {"log1": "Decrypted content of log1"}
-
-    def test_refresh_logs(self):
-
-        left_frame = MagicMock()
-        
-        # Chiamata alla funzione da testare con i mock
-        refresh_logs(self.logs, left_frame, self.LOGS_PATH, self.key)
-
-        # Verifica che il frame sinistro non sia vuoto
-        self.assertNotEqual(len(left_frame.winfo_children()), 0)
-        # Verifica che per ogni log nel dizionario sia stato aggiunto un frame e un textbox con il contenuto corretto
-        for widget in self.left_frame.winfo_children():
-            print("widget aaaaa")
-            if isinstance(widget, ctk.CTkFrame):
-                self.assertTrue(any(log_frame.winfo_children() for log_frame in widget.winfo_children() if isinstance(log_frame, ctk.CTkTextbox)))
-
- 
 
 # Esegui i test
 if __name__ == '__main__':

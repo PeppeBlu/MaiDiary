@@ -4,4 +4,3 @@ pytest
 pylint
 hypothesis
 coverage
-unittest
