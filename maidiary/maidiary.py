@@ -83,50 +83,52 @@ def close_visualize(visualize_frame, left_frame):
     refresh_logs(load_logs(LOGS_PATH, key), left_frame, LOGS_PATH, key)
 
 
+def make_delete_command(log, left_frame, LOGS_PATH, key):
+    return lambda: delete_log(log, left_frame, LOGS_PATH, key)
+
+def make_visualize_command(left_frame, log, log_content):
+    return lambda: visualize_log(log, log_content, left_frame)
+
 def refresh_logs(logs, left_frame, LOGS_PATH, key):
     """Funzione che aggiorna la lista dei log visualizzati sul frame sinistro"""
+    try:
+        for widget in left_frame.winfo_children():
+            widget.destroy()
 
-    for widget in left_frame.winfo_children():
-        widget.destroy()
-    
-    for log_name, decrypted_log_content in logs.items():
-        log_frame = ctk.CTkFrame(left_frame,
-                                 corner_radius=20,
-                                 fg_color="#D3E3F9")
-        log_frame.pack(side="top", expand=True, fill="both", padx=2, pady=5)
-
-        buttons_frame = ctk.CTkFrame(left_frame,
+        for log_name, decrypted_log_content in logs.items():
+            log_frame = ctk.CTkFrame(left_frame,
                                      corner_radius=20,
                                      fg_color="#D3E3F9")
-        buttons_frame.pack(side="top", expand=True, fill="both", padx=2, pady=2)
-        buttons_frame.grid_rowconfigure(0, weight=1)
-        buttons_frame.grid_columnconfigure(0, weight=1)
-        buttons_frame.grid_columnconfigure(1, weight=1)
+            log_frame.pack(side="top", expand=True, fill="both", padx=2, pady=5)
 
-        log_text = ctk.CTkTextbox(log_frame,
-                                  height=200, width=300, font=("Helvetica", 13),
-                                  corner_radius=20, scrollbar_button_color="#D3E3F9")
-        log_text.pack(expand=True, fill="both", padx=2, pady=5)
-        log_text.insert(tk.END, decrypted_log_content + "\n")
+            buttons_frame = ctk.CTkFrame(left_frame,
+                                         corner_radius=20,
+                                         fg_color="#D3E3F9")
+            buttons_frame.pack(side="top", expand=True, fill="both", padx=2, pady=2)
+            buttons_frame.grid_rowconfigure(0, weight=1)
+            buttons_frame.grid_columnconfigure(0, weight=1)
+            buttons_frame.grid_columnconfigure(1, weight=1)
 
-        delete_button = ctk.CTkButton(buttons_frame,
-                                      text="Cancella",
-                                      width=100, height=30, hover_color="red",
-                                      command=lambda log=log_name: delete_log(log, left_frame, LOGS_PATH, key))
-        delete_button.grid(row=0, column=0, pady=2)
+            log_text = ctk.CTkTextbox(log_frame,
+                                      height=200, width=300, font=("Helvetica", 13),
+                                      corner_radius=20, scrollbar_button_color="#D3E3F9")
+            log_text.pack(expand=True, fill="both", padx=2, pady=5)
+            log_text.insert(tk.END, decrypted_log_content + "\n")
 
+            delete_button = ctk.CTkButton(buttons_frame,
+                                          text="Cancella",
+                                          width=100, height=30, hover_color="red",
+                                          command=make_delete_command(log_name, left_frame, LOGS_PATH, key))
+            delete_button.grid(row=0, column=0, pady=2)
 
-        visualize_button = ctk.CTkButton(buttons_frame,
-                                         text="Visualizza/Modifica",
-                                         width=100, height=30, hover_color="green",
-                                         command=lambda
-                                         left_frame=left_frame,
-                                         log=log_name,
-                                         log_content=decrypted_log_content: visualize_log(log,
-                                                                                log_content,
-                                                                                left_frame))
-        visualize_button.grid(row=0, column=1, pady=2)
-
+            visualize_button = ctk.CTkButton(buttons_frame,
+                                             text="Visualizza/Modifica",
+                                             width=100, height=30, hover_color="green",
+                                             command=make_visualize_command(left_frame, log_name, decrypted_log_content))
+            visualize_button.grid(row=0, column=1, pady=2)
+    except Exception as e:
+        print(e)
+        messagebox.showwarning("Errore", "Errore durante la visualizzazione dei log.")
 
 def delete_log(log, left_frame, LOGS_PATH, key):
     """Funzione che elimina un log"""
