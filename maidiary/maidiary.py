@@ -271,10 +271,6 @@ def create_main_frame(root):
 def main(root, Test):
     """Funzione principale del programma"""
 
-    if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
-        os.system('Xvfb :1 -screen 0 1600x1200x16  &')
-        os.environ["DISPLAY"] = ":1.0"
-    
     root.title("Maidiary by Peppe Blunda")
 
     #Associo la funzione di chiusura personalizzata all'evento di chiusura della finestra principale

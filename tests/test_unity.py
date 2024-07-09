@@ -30,6 +30,10 @@ class TestMain(unittest.TestCase):
         @patch('maidiary.maidiary.create_main_frame', side_effect=create_mock_widget)
         def test_main(self, MockCTkFrame,  MockPhotoImage, MockCreateMainFrame):
             
+            if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
+                os.system('Xvfb :1 -screen 0 1600x1200x16  &')
+                os.environ["DISPLAY"] = ":1.0"
+
             #simulo il logo
             logo = tk.PhotoImage()
             MockPhotoImage.return_value = logo
@@ -66,6 +70,10 @@ class TestShowDiaryPage(unittest.TestCase):
         mock_load_logs.return_value = {}
         mock_messagebox.askyesno.return_value = True
         mock_messagebox.showwarning.return_value = None
+        
+        if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
+                os.system('Xvfb :1 -screen 0 1600x1200x16  &')
+                os.environ["DISPLAY"] = ":1.0"
         
         root = tk.Tk()
         main_frame = ctk.CTkFrame(root)
@@ -278,7 +286,10 @@ class TestRefreshLogs(unittest.TestCase):
             "log1.txt": "Contenuto del log 1"
         }
 
-        # Mock del frame
+        if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
+                os.system('Xvfb :1 -screen 0 1600x1200x16  &')
+                os.environ["DISPLAY"] = ":1.0"
+
         root = ctk.CTk()
         left_frame = ctk.CTkFrame(root)
 
