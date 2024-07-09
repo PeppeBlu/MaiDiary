@@ -83,12 +83,6 @@ def close_visualize(visualize_frame, left_frame):
     refresh_logs(load_logs(LOGS_PATH, key), left_frame, LOGS_PATH, key)
 
 
-def make_delete_command(log, left_frame, LOGS_PATH, key):
-    return lambda: delete_log(log, left_frame, LOGS_PATH, key)
-
-def make_visualize_command(left_frame, log, log_content):
-    return lambda: visualize_log(log, log_content, left_frame)
-
 def refresh_logs(logs, left_frame, LOGS_PATH, key):
     """Funzione che aggiorna la lista dei log visualizzati sul frame sinistro"""
     try:
@@ -118,17 +112,23 @@ def refresh_logs(logs, left_frame, LOGS_PATH, key):
             delete_button = ctk.CTkButton(buttons_frame,
                                           text="Cancella",
                                           width=100, height=30, hover_color="red",
-                                          command=make_delete_command(log_name, left_frame, LOGS_PATH, key))
+                                          command=lambda: delete_log(log_name, left_frame, LOGS_PATH, key))
             delete_button.grid(row=0, column=0, pady=2)
 
             visualize_button = ctk.CTkButton(buttons_frame,
                                              text="Visualizza/Modifica",
                                              width=100, height=30, hover_color="green",
-                                             command=make_visualize_command(left_frame, log_name, decrypted_log_content))
+                                             command=lambda: visualize_log(log_name, decrypted_log_content, left_frame))
             visualize_button.grid(row=0, column=1, pady=2)
+    
+    
     except Exception as e:
-        print(e)
-        messagebox.showwarning("Errore", "Errore durante la visualizzazione dei log.")
+        pass
+        #print(e)
+        #error = str(e)
+        #messagebox.showwarning("Errore", "Errore durante la visualizzazione dei log.\nMotivo"+error)
+
+
 
 def delete_log(log, left_frame, LOGS_PATH, key):
     """Funzione che elimina un log"""

@@ -190,37 +190,40 @@ class TestDeleteLog(unittest.TestCase):
 
 class TestRefreshLogs(unittest.TestCase):
 
-    @patch('maidiary.maidiary.make_delete_command')
-    @patch('maidiary.maidiary.make_visualize_command')
-    @patch('maidiary.maidiary.load_logs')
-    def test_refresh_logs(self, mock_load_logs, mock_make_visualize_command, mock_make_delete_command):
-        # Configurazione iniziale
-        mock_load_logs.return_value = {
-            "log1.txt": "Contenuto del log 1",
-            "log2.txt": "Contenuto del log 2"
-        }
+    def create_mock_widget(*args, **kwargs):
+        mock_widget = MagicMock()
+        mock_widget.pack.side_effect = lambda *args, **kwargs: None
+        mock_widget.grid.side_effect = lambda *args, **kwargs: None
+        mock_widget.destroy.side_effect = lambda *args, **kwargs: None
+        mock_widget.winfo_children.return_value = []  # Simula nessun child iniziale
+        return mock_widget
+
+
+    @patch('maidiary.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
+    @patch('maidiary.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
+    @patch('maidiary.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
+    def test_refresh_logs(self, MockCTkFrame, MockCTkTextbox, MockCTkButton):
+        # Simulazione dei log
         logs = {
             "log1.txt": "Contenuto del log 1",
             "log2.txt": "Contenuto del log 2"
         }
 
-        # Creazione del frame
-        root = ctk.CTk()
-        left_frame = ctk.CTkFrame(root)
+        # Mock del frame
+        left_frame = self.create_mock_widget()
 
-        # Chiamata alla funzione
+        # Chiamata alla funzione da testare
         refresh_logs(logs, left_frame, "mock_logs_path", "mock_key")
 
         # Verifica che i widget siano stati creati correttamente
-        self.assertEqual(len(left_frame.winfo_children()), 4)  # 2 log_frame + 2 buttons_frame
+        self.assertEqual(MockCTkFrame.call_count, 4)  # Due log, ciascuno con un frame per il log e uno per i pulsanti
+        self.assertEqual(MockCTkTextbox.call_count, 2)  # Un textbox per ogni log
+        self.assertEqual(MockCTkButton.call_count, 4)  # Due pulsanti per ogni log
 
-        # Verifica delle chiamate delle funzioni di comando
-        self.assertEqual(mock_make_delete_command.call_count, 2)
-        self.assertEqual(mock_make_visualize_command.call_count, 2)
+        # Verifica che i pulsanti "Cancella" e "Visualizza/Modifica" siano stati creati per ciascun log
+        self.assertTrue(MockCTkButton.call_args_list[0][0][0])
+        self.assertTrue(MockCTkButton.call_args_list[1][0][0])
 
-        # Distruzione dei widget
-        for widget in left_frame.winfo_children():
-            widget.destroy()
 
 
 
