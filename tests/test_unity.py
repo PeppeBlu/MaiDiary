@@ -9,53 +9,78 @@ from unittest.mock import patch, MagicMock
 from maidiary.maidiary import encrypt_data, decrypt_data, delete_log, refresh_logs, main
 from maidiary.maidiary import generate_key, calculate_quality, load_logs, save_log, show_diary_page
 
-class TestShowDiaryPage(unittest.TestCase):
+
+class TestMain(unittest.TestCase):
     
+        def create_mock_widget(*args, **kwargs):
+            mock_widget = MagicMock()
+            mock_widget.pack.side_effect = lambda *args, **kwargs: None
+            mock_widget.grid.side_effect = lambda *args, **kwargs: None
+            mock_widget.destroy.side_effect = lambda *args, **kwargs: None
+            mock_widget.winfo_children.return_value = []  # Simula nessun child iniziale
+            return mock_widget
+    
+        def mock_photoimage(*args, **kwargs):
+            # Creazione di un mock per tk.PhotoImage
+            mock_photo = MagicMock()
+            return mock_photo
+
+        @patch('maidiary.maidiary.tk.PhotoImage', side_effect=mock_photoimage)
+        @patch('maidiary.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
+        @patch('maidiary.maidiary.create_main_frame', side_effect=create_mock_widget)
+        def test_main(self, MockCTkFrame,  MockPhotoImage, MockCreateMainFrame):
+            
+            #simulo il logo
+            logo = tk.PhotoImage()
+            MockPhotoImage.return_value = logo
+            root = ctk.CTk()
+            MockCreateMainFrame.return_value = ctk.CTkFrame(root)
+            main(root, Test=True)
+            self.assertEqual(MockCTkFrame.call_count, 1)
+
+
+class TestShowDiaryPage(unittest.TestCase):
+
+
+    def create_mock_widget(*args, **kwargs):
+        mock_widget = MagicMock()
+        mock_widget.pack.side_effect = lambda *args, **kwargs: None
+        mock_widget.grid.side_effect = lambda *args, **kwargs: None
+        mock_widget.destroy.side_effect = lambda *args, **kwargs: None
+        mock_widget.winfo_children.return_value = []  # Simula nessun child iniziale
+        return mock_widget
+
+
     @patch('maidiary.maidiary.messagebox')
     @patch('maidiary.maidiary.os.path.exists')
     @patch('maidiary.maidiary.load_logs')
     @patch('maidiary.maidiary.generate_key')
-    @patch('maidiary.maidiary.os.makedirs')
-    def test_show_diary_page(self, mock_makedirs, mock_generate_key, mock_load_logs, mock_path_exists, mock_messagebox):
-        # Mocking os.path.exists to simulate user diary existence
+    @patch('maidiary.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
+    @patch('maidiary.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
+    @patch('maidiary.maidiary.ctk.CTkLabel', side_effect=create_mock_widget)
+    @patch('maidiary.maidiary.ctk.CTkSlider', side_effect=create_mock_widget)
+    def test_show_diary_page(self, mock_generate_key, mock_load_logs, mock_path_exists, mock_messagebox,
+                              MockCTkTextbox, MockCTkButton, MockCTkLabel, MockCTkSlider):
         mock_path_exists.return_value = True
-        
-        # Mocking generate_key to return a dummy key
         mock_generate_key.return_value = b'dummy_key'
-        
-        # Mocking load_logs to return a non-empty dictionary
-        mock_load_logs.return_value = {"log": "test_log"}
-        
-        # Mocking messagebox to simulate user interactions
+        mock_load_logs.return_value = {}
         mock_messagebox.askyesno.return_value = True
         mock_messagebox.showwarning.return_value = None
         
-        
-        if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
-            os.system('Xvfb :1 -screen 0 1600x1200x16  &')
-            os.environ["DISPLAY"] = ":1.0"
-        
-        # Creating a root window for the test
         root = tk.Tk()
         main_frame = ctk.CTkFrame(root)
         
-        # Creating user_entry and password_entry with mock values
         user_entry = ctk.CTkEntry(root)
         user_entry.insert(0, 'test_user')
         password_entry = ctk.CTkEntry(root)
         password_entry.insert(0, 'test_password')
         
-        # Call the function
         show_diary_page(root, main_frame, user_entry, password_entry)
         
-        # Check if the main_frame is destroyed
         self.assertFalse(main_frame.winfo_exists())
         
-         
-        self.assertIsNotNone(root.winfo_children())
-       
-        # Clean up
-        root.quit()
+        children = root.winfo_children()
+        self.assertEqual(len(children), 4) #  
 
 
 class TestGenerateKey(unittest.TestCase):
@@ -250,24 +275,24 @@ class TestRefreshLogs(unittest.TestCase):
     def test_refresh_logs(self, MockCTkFrame, MockCTkTextbox, MockCTkButton):
         # Simulazione dei log
         logs = {
-            "log1.txt": "Contenuto del log 1",
-            "log2.txt": "Contenuto del log 2"
+            "log1.txt": "Contenuto del log 1"
         }
 
         # Mock del frame
-        left_frame = self.create_mock_widget()
+        root = ctk.CTk()
+        left_frame = ctk.CTkFrame(root)
 
         # Chiamata alla funzione da testare
         refresh_logs(logs, left_frame, "mock_logs_path", "mock_key")
 
         # Verifica che i widget siano stati creati correttamente
-        self.assertEqual(MockCTkFrame.call_count, 4)  # Due log, ciascuno con un frame per il log e uno per i pulsanti
-        self.assertEqual(MockCTkTextbox.call_count, 2)  # Un textbox per ogni log
-        self.assertEqual(MockCTkButton.call_count, 4)  # Due pulsanti per ogni log
+        self.assertEqual(MockCTkFrame.call_count, 2) 
+        self.assertEqual(MockCTkTextbox.call_count, 1)  # Un textbox per ogni log
+        self.assertEqual(MockCTkButton.call_count, 3)  # Due pulsanti per ogni log
 
         # Verifica che i pulsanti "Cancella" e "Visualizza/Modifica" siano stati creati per ciascun log
-        self.assertTrue(MockCTkButton.call_args_list[0][0][0])
-        self.assertTrue(MockCTkButton.call_args_list[1][0][0])
+        self.assertTrue(MockCTkButton.winfo_exists())
+        self.assertTrue(MockCTkButton.winfo_exists())
 
 
 

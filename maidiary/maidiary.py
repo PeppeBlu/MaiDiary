@@ -268,30 +268,31 @@ def create_main_frame(root):
     return main_frame
 
 
-def main():
+def main(root, Test):
     """Funzione principale del programma"""
 
     if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
         os.system('Xvfb :1 -screen 0 1600x1200x16  &')
         os.environ["DISPLAY"] = ":1.0"
     
-    root = ctk.CTk()
     root.title("Maidiary by Peppe Blunda")
 
-    #Associa la funzione di chiusura personalizzata all'evento di chiusura della finestra principale
+    #Associo la funzione di chiusura personalizzata all'evento di chiusura della finestra principale
     root.protocol("WM_DELETE_WINDOW", lambda: on_closing_root(root))
 
     root.geometry("800x600")
     root.resizable(width=True, height=True)
 
-    # Carica l'immagine del logo una volta e mantieni un riferimento
     root.logo_image = tk.PhotoImage(file="MaiDiary_Logo.png")
 
     # Configurazione del frame principale
     main_frame = create_main_frame(root)
     main_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
 
-    root.mainloop()
+    if(Test):
+        root.quit()
+    else:
+        root.mainloop()
 
 
 def show_diary_page(root, main_frame, user_entry, password_entry):
@@ -323,9 +324,9 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
         messagebox.showwarning("Errore", "Password o username errati!")
         return
 
-    
-    main_frame.destroy()
-   
+    if(main_frame.winfo_exists()):
+        main_frame.destroy()
+
     left_frame = ctk.CTkScrollableFrame(root,
                                         corner_radius=20,
                                         fg_color="#D3E3F9",
@@ -517,4 +518,5 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
 
 
 if __name__ == "__main__":
-    main()
+    root = ctk.CTk()
+    main(root, Test=False)
