@@ -1,15 +1,10 @@
 from pathlib import Path
 import tempfile
-import tkinter as tk
-from tkinter import messagebox
-import customtkinter as ctk
 import unittest
 from cryptography.fernet import InvalidToken
 from unittest.mock import patch, MagicMock
 from maidiary.maidiary import encrypt_data, decrypt_data, delete_log, refresh_logs
-from maidiary.maidiary import generate_key, calculate_quality, load_logs, save_log
-
-
+from maidiary.maidiary import generate_key, calculate_quality, load_logs, save_log, show_diary_page
 
 
 
@@ -223,8 +218,6 @@ class TestRefreshLogs(unittest.TestCase):
         # Verifica che i pulsanti "Cancella" e "Visualizza/Modifica" siano stati creati per ciascun log
         self.assertTrue(MockCTkButton.call_args_list[0][0][0])
         self.assertTrue(MockCTkButton.call_args_list[1][0][0])
-
-
 
 
 
