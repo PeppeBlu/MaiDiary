@@ -67,49 +67,39 @@ class TestCalculateQuality(unittest.TestCase):
         self.assertEqual(quality, 0)
 
 
+
 class TestSaveLog(unittest.TestCase):
 
     def setUp(self):
-        self.temp_dir = tempfile.mkdtemp()  # Crea una directory temporanea
+        # Setup comune per i test
+        self.temp_dir = tempfile.mkdtemp()
         self.username = "test_user"
         self.password = "test_password"
         self.salt = self.username.encode()
         self.key = generate_key(self.password, self.salt)
         self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
-        self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  # Mi assicuro che il percorso esista
+        self.LOGS_PATH.mkdir(parents=True, exist_ok=True)
         self.data = "secret test data"
 
-    
     def test_save_log(self):
+        # Percorso previsto per il file di log
+        expected_log_path = self.LOGS_PATH / "log_file.txt"
+        
+        # Assicura che il file di log non esista prima del salvataggio
+        self.assertFalse(expected_log_path.exists())
+
+        # Salva il log
         log_path = save_log(self.data, self.key, str(self.LOGS_PATH))
         
-        # Apro il file e controllo che i dati siano stati scritti correttamente
+        # Verifica che il file di log esista dopo il salvataggio
+        self.assertTrue(Path(log_path).exists())
+
+        # Apre il file di log e verifica che i dati siano corretti
         with open(log_path, "rb") as file:
             read_data = file.read()
-            self.assertNotEqual(read_data, "")  # Mi assicuro che il file non sia vuoto
-            self.assertEqual(self.data, decrypt_data(read_data, self.key))
-            
+            self.assertNotEqual(read_data, b"")  # Verifica che il file non sia vuoto
+            self.assertEqual(self.data, decrypt_data(read_data, self.key))  # Verifica che i dati siano corretti
 
-class TestSaveLog2(unittest.TestCase):
-    def setUp(self):
-            self.temp_dir = tempfile.mkdtemp()
-            self.username = "test_user"
-            self.password = "test_password"
-            self.salt = self.username.encode()
-            self.key = generate_key(self.password, self.salt)
-            self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
-            self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  
-            self.data = "secret test data"
-    
-    
-    def test_save_log_2(self):
-        # Assicura che il file esista
-        #self.assertFalse(Path(self.log_path).exists())
-        
-        self.log_path = save_log(self.data, self.key, str(self.LOGS_PATH))
-        
-        # Verifica che il file sia stato eliminato
-        self.assertTrue(Path(self.log_path).exists())
 
 
 class TestLoadLogs(unittest.TestCase):
