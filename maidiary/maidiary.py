@@ -271,6 +271,10 @@ def create_main_frame(root):
 def main():
     """Funzione principale del programma"""
 
+    if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
+        os.system('Xvfb :1 -screen 0 1600x1200x16  &')
+        os.environ["DISPLAY"] = ":1.0"
+    
     root = ctk.CTk()
     root.title("Maidiary by Peppe Blunda")
 
@@ -292,8 +296,7 @@ def main():
 
 def show_diary_page(root, main_frame, user_entry, password_entry):
     """Funzione che mostra la pagina di inserimento del diario"""
-
-    #memorizza localmente nome utente e password
+    
     global LOGS_PATH
     global key
     username = user_entry.get()
@@ -313,17 +316,16 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
             os.makedirs(f"users/{username}_diary")
         else:
             return
-
+    
     logs = load_logs(LOGS_PATH, key)
-
-    if logs == []:
+    
+    if logs == {}:
         messagebox.showwarning("Errore", "Password o username errati!")
         return
 
-
+    
     main_frame.destroy()
-
-    #Top frame e  bottom frame
+   
     left_frame = ctk.CTkScrollableFrame(root,
                                         corner_radius=20,
                                         fg_color="#D3E3F9",
@@ -511,6 +513,7 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
 
         else:
             messagebox.showwarning("Errore", "Il testo del diario non può essere vuoto.")
+        print("fine della funzione show_diary_page")
 
 
 if __name__ == "__main__":
