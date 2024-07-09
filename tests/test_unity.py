@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
 import tempfile
+from tkinter import messagebox
 import unittest
 import datetime
 import os
@@ -164,43 +165,23 @@ class TestDeleteLog(unittest.TestCase):
             self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
             self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  
             self.data = "secret test data"
-            self.log_path = save_log(self.data, self.key, str(self.LOGS_PATH))
+            self.log_path = "test_log.txt"
+            with open(f"{self.LOGS_PATH}/{self.log_path}", "wb") as file:
+                file.write(encrypt_data(self.data, self.key))
             
     
-    
-        def test_delete_log(self):
-            # Assicura che il file esista
-            self.assertTrue(Path(self.log_path).exists())
+        @patch("tkinter.messagebox.askyesno")
+        def test_delete_log(self, mock_messagebox):
+            mock_messagebox.return_value=True
             left_frame=MagicMock()
-            delete_log(self.log_path, left_frame, "", self.key)
+            
+            self.assertTrue(Path(f"{self.LOGS_PATH}/{self.log_path}").exists()) 
+
+            delete_log(self.log_path, left_frame, self.LOGS_PATH, self.key)
             
             # Verifica che il file sia stato eliminato
-            self.assertFalse(Path(self.log_path).exists())  
+            self.assertFalse(Path(f"{self.LOGS_PATH}/{self.log_path}").exists())  
 
-
-class DeleteLog2(unittest.TestCase):
-    
-    def setUp(self):
-        mock_dir = MagicMock()
-        mock_file = MagicMock()
-        mock_file.name = "test_file.txt"
-        mock_file.is_file.return_value = True
-        mock_dir.glob.return_value = [mock_file]
-
-
-        self.username = "test_user"
-        self.password = "test_password"
-        self.salt = self.username.encode()
-        self.key = generate_key(self.password, self.salt) 
-        self.data = "secret test data"
-        self.log_path = save_log(self.data, self.key, str(mock_dir))
-
-        delete_log(self.log_path, mock_dir, "", self.key)
-
-        # Verifica che il file sia stato eliminato
-        self.assertFalse(mock_file.exists())
-        
-        
 
 
 if __name__ == '__main__':
