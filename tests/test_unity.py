@@ -1,6 +1,7 @@
 from pathlib import Path
 import tempfile
 import unittest
+import os
 import tkinter as tk
 import customtkinter as ctk
 from cryptography.fernet import InvalidToken
@@ -28,6 +29,11 @@ class TestShowDiaryPage(unittest.TestCase):
         # Mocking messagebox to simulate user interactions
         mock_messagebox.askyesno.return_value = True
         mock_messagebox.showwarning.return_value = None
+        
+        
+        if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
+            os.system('Xvfb :1 -screen 0 1600x1200x16  &')
+            os.environ["DISPLAY"] = ":1.0"
         
         # Creating a root window for the test
         root = tk.Tk()
