@@ -80,10 +80,10 @@ def close_visualize(visualize_frame, left_frame):
     """Funzione che chiude la visualizzazione di un log"""
 
     visualize_frame.destroy()
-    refresh_logs(load_logs(LOGS_PATH, key), left_frame)
+    refresh_logs(load_logs(LOGS_PATH, key), left_frame, LOGS_PATH, key)
 
 
-def refresh_logs(logs, left_frame):
+def refresh_logs(logs, left_frame, LOGS_PATH, key):
     """Funzione che aggiorna la lista dei log visualizzati sul frame sinistro"""
 
     for widget in left_frame.winfo_children():
@@ -112,7 +112,7 @@ def refresh_logs(logs, left_frame):
         delete_button = ctk.CTkButton(buttons_frame,
                                       text="Cancella",
                                       width=100, height=30, hover_color="red",
-                                      command=lambda log=log_name: delete_log(log, left_frame))
+                                      command=lambda log=log_name: delete_log(log, left_frame, LOGS_PATH, key))
         delete_button.grid(row=0, column=0, pady=2)
 
 
@@ -128,12 +128,12 @@ def refresh_logs(logs, left_frame):
         visualize_button.grid(row=0, column=1, pady=2)
 
 
-def delete_log(log, left_frame):
+def delete_log(log, left_frame, LOGS_PATH, key):
     """Funzione che elimina un log"""
 
     if messagebox.askyesno("", "Vuoi davvero eliminare la pagina?"):
         os.remove(f"{LOGS_PATH}/{log}")
-        refresh_logs(load_logs(LOGS_PATH, key), left_frame)
+        refresh_logs(load_logs(LOGS_PATH, key), left_frame, LOGS_PATH, key)
 
 
 def update_log(log, visualize_text, visualize_frame, left_frame):
@@ -142,7 +142,7 @@ def update_log(log, visualize_text, visualize_frame, left_frame):
     with open(f"{LOGS_PATH}/{log}", "wb") as file:
         file.write(encrypted_data)
     visualize_frame.destroy()
-    refresh_logs(load_logs(LOGS_PATH, key), left_frame)
+    refresh_logs(load_logs(LOGS_PATH, key), left_frame, LOGS_PATH, key)
     messagebox.showinfo("","Pagina salvata con successo!")
 
 
@@ -334,7 +334,7 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
     right_frame.pack(side="right", expand=True, fill="both", padx=5, pady=5)
 
     # Faccio il refresh dei log
-    refresh_logs(logs,left_frame)
+    refresh_logs(logs,left_frame, LOGS_PATH, key)
 
     # Frame in alto a destra
     top_right_frame = ctk.CTkFrame(right_frame,
@@ -495,7 +495,7 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
             f"\n{diary_text}")
 
             path = save_log(log, key, LOGS_PATH)
-            refresh_logs(load_logs(LOGS_PATH, key), left_frame)
+            refresh_logs(load_logs(LOGS_PATH, key), left_frame, LOGS_PATH, key)
             diary_entry.delete("1.0", ctk.END)
 
             #Reset degli slider

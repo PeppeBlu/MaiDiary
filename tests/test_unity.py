@@ -6,7 +6,8 @@ import datetime
 import os
 from cryptography.fernet import InvalidToken
 from unittest.mock import patch, mock_open, MagicMock
-from maidiary.maidiary import encrypt_data, decrypt_data, generate_key, calculate_quality, load_logs, save_log
+from maidiary.maidiary import encrypt_data, decrypt_data, delete_log
+from maidiary.maidiary import generate_key, calculate_quality, load_logs, save_log
 
 
 
@@ -74,33 +75,45 @@ class TestSaveLog(unittest.TestCase):
         self.salt = self.username.encode()
         self.key = generate_key(self.password, self.salt)
         self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
-        self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  # Assicurati che il percorso esista
+        self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  # Mi assicuro che il percorso esista
         self.data = "secret test data"
 
-    def tearDown(self):
-        # Pulisci la directory temporanea dopo ogni test
-        for item in Path(self.temp_dir).glob("*"):
-            if item.is_dir():
-                shutil.rmtree(item)
-            else:
-                item.unlink()
-
+    
     def test_save_log(self):
-        # Assumi che save_log restituisca il percorso del file come stringa
         log_path = save_log(self.data, self.key, str(self.LOGS_PATH))
         
-        # Apri il file e controlla che i dati siano stati scritti correttamente
+        # Apro il file e controllo che i dati siano stati scritti correttamente
         with open(log_path, "rb") as file:
             read_data = file.read()
-            self.assertNotEqual(read_data, "")  # Assicurati che il file non sia vuoto
+            self.assertNotEqual(read_data, "")  # Mi assicuro che il file non sia vuoto
             self.assertEqual(self.data, decrypt_data(read_data, self.key))
             
+
+class TestSaveLog2(unittest.TestCase):
+    def setUp(self):
+            self.temp_dir = tempfile.mkdtemp()
+            self.username = "test_user"
+            self.password = "test_password"
+            self.salt = self.username.encode()
+            self.key = generate_key(self.password, self.salt)
+            self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
+            self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  
+            self.data = "secret test data"
+    
+    
+    def test_save_log_2(self):
+        # Assicura che il file esista
+        #self.assertFalse(Path(self.log_path).exists())
+        
+        self.log_path = save_log(self.data, self.key, str(self.LOGS_PATH))
+        
+        # Verifica che il file sia stato eliminato
+        self.assertTrue(Path(self.log_path).exists())
 
 
 class TestLoadLogs(unittest.TestCase):
 
     def setUp(self):
-        # Crea una directory temporanea
         self.temp_dir = tempfile.mkdtemp()
         self.username = "test_user"
         self.password = "test_password"
@@ -109,7 +122,7 @@ class TestLoadLogs(unittest.TestCase):
         self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
         self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  # Crea la struttura di directory necessaria
 
-        # Prepara i dati e salva i file di log crittografati
+        # Preparo i dati e salva i file di log crittografati
         self.data1 = encrypt_data("secret test data 1", self.key)
         self.data2 = encrypt_data("secret test data 2", self.key)
         self.file1 = self.LOGS_PATH / "log1.txt"
@@ -121,12 +134,8 @@ class TestLoadLogs(unittest.TestCase):
         with open(self.file2, "wb") as file:
             file.write(self.data2)
 
-    def tearDown(self):
-        # Rimuove la directory temporanea e tutto il suo contenuto
-        shutil.rmtree(self.temp_dir)
 
     def test_load_logs(self):
-        # Esegue la funzione da testare
         logs = load_logs(str(self.LOGS_PATH), self.key)
 
         # Verifica che i contenuti decrittografati corrispondano ai dati originali
@@ -143,13 +152,55 @@ class TestLoadLogs(unittest.TestCase):
         self.assertTrue(self.file1.name in logs)
         self.assertTrue(self.file2.name in logs)
 
-
        
-        
-
+class TestDeleteLog(unittest.TestCase):
     
+        def setUp(self):
+            self.temp_dir = tempfile.mkdtemp()
+            self.username = "test_user"
+            self.password = "test_password"
+            self.salt = self.username.encode()
+            self.key = generate_key(self.password, self.salt)
+            self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
+            self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  
+            self.data = "secret test data"
+            self.log_path = save_log(self.data, self.key, str(self.LOGS_PATH))
+            
+    
+    
+        def test_delete_log(self):
+            # Assicura che il file esista
+            self.assertTrue(Path(self.log_path).exists())
+            left_frame=MagicMock()
+            delete_log(self.log_path, left_frame, "", self.key)
+            
+            # Verifica che il file sia stato eliminato
+            self.assertFalse(Path(self.log_path).exists())  
+
+
+class DeleteLog2(unittest.TestCase):
+    
+    def setUp(self):
+        mock_dir = MagicMock()
+        mock_file = MagicMock()
+        mock_file.name = "test_file.txt"
+        mock_file.is_file.return_value = True
+        mock_dir.glob.return_value = [mock_file]
+
+
+        self.username = "test_user"
+        self.password = "test_password"
+        self.salt = self.username.encode()
+        self.key = generate_key(self.password, self.salt) 
+        self.data = "secret test data"
+        self.log_path = save_log(self.data, self.key, str(mock_dir))
+
+        delete_log(self.log_path, mock_dir, "", self.key)
+
+        # Verifica che il file sia stato eliminato
+        self.assertFalse(mock_file.exists())
         
-       
+        
 
 
 if __name__ == '__main__':
