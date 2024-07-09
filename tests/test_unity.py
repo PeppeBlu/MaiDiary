@@ -5,7 +5,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 import unittest
 from cryptography.fernet import InvalidToken
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 from maidiary.maidiary import encrypt_data, decrypt_data, delete_log, refresh_logs
 from maidiary.maidiary import generate_key, calculate_quality, load_logs, save_log
 
