@@ -11,40 +11,39 @@ from maidiary.maidiary import generate_key, calculate_quality, load_logs, save_l
 
 
 class TestMain(unittest.TestCase):
-    
-        def create_mock_widget(*args, **kwargs):
-            mock_widget = MagicMock()
-            mock_widget.pack.side_effect = lambda *args, **kwargs: None
-            mock_widget.grid.side_effect = lambda *args, **kwargs: None
-            mock_widget.destroy.side_effect = lambda *args, **kwargs: None
-            mock_widget.winfo_children.return_value = []  # Simula nessun child iniziale
-            return mock_widget
-    
-        def mock_photoimage(*args, **kwargs):
-            # Creazione di un mock per tk.PhotoImage
-            mock_photo = MagicMock()
-            return mock_photo
 
-        @patch('maidiary.maidiary.tk.PhotoImage', side_effect=mock_photoimage)
-        @patch('maidiary.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
-        @patch('maidiary.maidiary.create_main_frame', side_effect=create_mock_widget)
-        def test_main(self, MockCTkFrame,  MockPhotoImage, MockCreateMainFrame):
-            
-            if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
-                os.system('Xvfb :1 -screen 0 1600x1200x16  &')
-                os.environ["DISPLAY"] = ":1.0"
+    def create_mock_widget(*args, **kwargs):
+        mock_widget = MagicMock()
+        mock_widget.pack.side_effect = lambda *args, **kwargs: None
+        mock_widget.grid.side_effect = lambda *args, **kwargs: None
+        mock_widget.destroy.side_effect = lambda *args, **kwargs: None
+        mock_widget.winfo_children.return_value = []  # Simula nessun child iniziale
+        return mock_widget
 
-            #simulo il logo
-            logo = tk.PhotoImage()
-            MockPhotoImage.return_value = logo
-            root = ctk.CTk()
-            MockCreateMainFrame.return_value = ctk.CTkFrame(root)
-            main(root, Test=True)
-            self.assertEqual(MockCTkFrame.call_count, 1)
+    def mock_photoimage(*args, **kwargs):
+        mock_photo = MagicMock()
+        return mock_photo
+
+    @patch('maidiary.maidiary.tk.PhotoImage', side_effect=mock_photoimage)
+    @patch('maidiary.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
+    @patch('maidiary.maidiary.create_main_frame', side_effect=create_mock_widget)
+    def test_main(self, MockCTkFrame,  MockPhotoImage, MockCreateMainFrame):
+
+        if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
+            os.system('Xvfb :1 -screen 0 1600x1200x16  &')
+            os.environ["DISPLAY"] = ":1.0"
+        
+        logo = tk.PhotoImage()
+        MockPhotoImage.return_value = logo
+        root = ctk.CTk()
+        MockCreateMainFrame.return_value = ctk.CTkFrame(root)
+        main(root, Test=True)
+
+        # Verifico che il frame principale si stato creato
+        self.assertEqual(MockCTkFrame.call_count, 1)
 
 
 class TestShowDiaryPage(unittest.TestCase):
-
 
     def create_mock_widget(*args, **kwargs):
         mock_widget = MagicMock()
@@ -63,32 +62,39 @@ class TestShowDiaryPage(unittest.TestCase):
     @patch('maidiary.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
     @patch('maidiary.maidiary.ctk.CTkLabel', side_effect=create_mock_widget)
     @patch('maidiary.maidiary.ctk.CTkSlider', side_effect=create_mock_widget)
-    def test_show_diary_page(self, mock_generate_key, mock_load_logs, mock_path_exists, mock_messagebox,
-                              MockCTkTextbox, MockCTkButton, MockCTkLabel, MockCTkSlider):
+    def test_show_diary_page(self, mock_generate_key, mock_load_logs,
+                             mock_path_exists, mock_messagebox, MockCTkSlider, MockCTkLabel, MockCTkButton, MockCTkTextbox):
         mock_path_exists.return_value = True
-        mock_generate_key.return_value = b'dummy_key'
+        mock_generate_key.return_value = b'test_key'
         mock_load_logs.return_value = {}
         mock_messagebox.askyesno.return_value = True
         mock_messagebox.showwarning.return_value = None
-        
+        MockCTkTextbox.return_value = MagicMock()
+        MockCTkButton.return_value = MagicMock()
+        MockCTkLabel.return_value = MagicMock()
+        MockCTkSlider.return_value = MagicMock()
+
         if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
-                os.system('Xvfb :1 -screen 0 1600x1200x16  &')
-                os.environ["DISPLAY"] = ":1.0"
-        
+            os.system('Xvfb :1 -screen 0 1600x1200x16  &')
+            os.environ["DISPLAY"] = ":1.0"
+
         root = tk.Tk()
         main_frame = ctk.CTkFrame(root)
-        
+
         user_entry = ctk.CTkEntry(root)
         user_entry.insert(0, 'test_user')
         password_entry = ctk.CTkEntry(root)
         password_entry.insert(0, 'test_password')
-        
+
         show_diary_page(root, main_frame, user_entry, password_entry)
-        
+
+        #controllo che il main frame sia stato distrutto
         self.assertFalse(main_frame.winfo_exists())
-        
+
         children = root.winfo_children()
-        self.assertEqual(len(children), 4) #  
+        print(children)
+        #root ha 4 figli: 2 Lables e 2 Frames (assegnati dalla show_diary_page)
+        self.assertEqual(len(children), 4)
 
 
 class TestGenerateKey(unittest.TestCase):
@@ -109,7 +115,7 @@ class TestEncryptionDecryptionFunctions(unittest.TestCase):
         self.salt = self.username.encode()
         self.key = generate_key(self.password, self.salt)
         self.data = "secret test data"
-        
+
 
     def test_encrypt_decrypt_data(self):
         encrypted_data = encrypt_data(self.data, self.key)
@@ -169,21 +175,21 @@ class TestSaveLog(unittest.TestCase):
 
         # Percorso previsto per il file di log
         expected_log_path = self.LOGS_PATH / "log_file.txt"
-        
+
         # Assicura che il file di log non esista prima del salvataggio
         self.assertFalse(expected_log_path.exists())
 
         # Salva il log
         log_path = save_log(self.data, self.key, str(self.LOGS_PATH))
-        
+
         # Verifica che il file di log esista dopo il salvataggio
         self.assertTrue(Path(log_path).exists())
 
         # Apre il file di log e verifica che i dati siano corretti
         with open(log_path, "rb") as file:
             read_data = file.read()
-            self.assertNotEqual(read_data, b"")  # Verifica che il file non sia vuoto
-            self.assertEqual(self.data, mock_decrypt_data(read_data, self.key))  # Verifica che i dati siano corretti
+            self.assertNotEqual(read_data, b"")
+            self.assertEqual(self.data, mock_decrypt_data(read_data, self.key))
 
 
 class TestLoadLogs(unittest.TestCase):
@@ -195,7 +201,7 @@ class TestLoadLogs(unittest.TestCase):
         self.salt = self.username.encode()
         self.key = b'some_generated_key'
         self.LOGS_PATH = Path(self.temp_dir) / f"users/{self.username}_diary"
-        self.LOGS_PATH.mkdir(parents=True, exist_ok=True)  # Crea la struttura di directory necessaria
+        self.LOGS_PATH.mkdir(parents=True, exist_ok=True)
 
         # Preparo i dati e salva i file di log crittografati
         self.data1 = b'encrypted_data_1'
@@ -231,9 +237,9 @@ class TestLoadLogs(unittest.TestCase):
         self.assertEqual(logs[self.file1.name], "secret test data 1")
         self.assertEqual(logs[self.file2.name], "secret test data 2")
 
-       
+
 class TestDeleteLog(unittest.TestCase):
-    
+
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
         self.username = "test_user"
@@ -244,17 +250,17 @@ class TestDeleteLog(unittest.TestCase):
         self.LOGS_PATH.mkdir(parents=True, exist_ok=True)
         self.data = b'encrypted_test_data'  # Dati criptati mockati
         self.log_path = "test_log.txt"
-        
+
         # Scrive i dati criptati nel file di log
         with open(f"{self.LOGS_PATH}/{self.log_path}", "wb") as file:
             file.write(self.data)
-            
+ 
     @patch("tkinter.messagebox.askyesno")
     @patch("maidiary.maidiary.decrypt_data")  # Mockiamo la funzione di decriptazione
     def test_delete_log(self, mock_decrypt_data, mock_messagebox):
         mock_messagebox.return_value = True
         left_frame = MagicMock()
-        
+
         self.assertTrue(Path(f"{self.LOGS_PATH}/{self.log_path}").exists())
 
         # Configuriamo il mock per restituire il dato decriptato atteso
@@ -263,7 +269,7 @@ class TestDeleteLog(unittest.TestCase):
         delete_log(self.log_path, left_frame, self.LOGS_PATH, self.key)
 
         # Verifica che il file sia stato eliminato
-        self.assertFalse(Path(f"{self.LOGS_PATH}/{self.log_path}").exists())  
+        self.assertFalse(Path(f"{self.LOGS_PATH}/{self.log_path}").exists())
 
 
 class TestRefreshLogs(unittest.TestCase):
@@ -287,8 +293,8 @@ class TestRefreshLogs(unittest.TestCase):
         }
 
         if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
-                os.system('Xvfb :1 -screen 0 1600x1200x16  &')
-                os.environ["DISPLAY"] = ":1.0"
+            os.system('Xvfb :1 -screen 0 1600x1200x16  &')
+            os.environ["DISPLAY"] = ":1.0"
 
         root = ctk.CTk()
         left_frame = ctk.CTkFrame(root)
@@ -297,11 +303,11 @@ class TestRefreshLogs(unittest.TestCase):
         refresh_logs(logs, left_frame, "mock_logs_path", "mock_key")
 
         # Verifica che i widget siano stati creati correttamente
-        self.assertEqual(MockCTkFrame.call_count, 2) 
+        self.assertEqual(MockCTkFrame.call_count, 2)
         self.assertEqual(MockCTkTextbox.call_count, 1)  # Un textbox per ogni log
         self.assertEqual(MockCTkButton.call_count, 3)  # Due pulsanti per ogni log
 
-        # Verifica che i pulsanti "Cancella" e "Visualizza/Modifica" siano stati creati per ciascun log
+        # Verifica che i pulsanti esistano
         self.assertTrue(MockCTkButton.winfo_exists())
         self.assertTrue(MockCTkButton.winfo_exists())
 

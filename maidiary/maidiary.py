@@ -285,7 +285,7 @@ def main(root, Test):
     main_frame = create_main_frame(root)
     main_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
 
-    if(Test):
+    if Test:
         root.quit()
     else:
         root.mainloop()
