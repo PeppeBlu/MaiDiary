@@ -41,7 +41,7 @@ class TestShowDiaryPage(unittest.TestCase):
             os.system('Xvfb :1 -screen 0 1600x1200x16  &')
             os.environ["DISPLAY"] = ":1.0"
 
-        root = tk.Tk()
+        root = ctk.CTk()
         main_frame = ctk.CTkFrame(root)
 
         user_entry = ctk.CTkEntry(root)
