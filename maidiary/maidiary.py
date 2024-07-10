@@ -112,22 +112,22 @@ def refresh_logs(logs, left_frame, LOGS_PATH, key):
             delete_button = ctk.CTkButton(buttons_frame,
                                           text="Cancella",
                                           width=100, height=30, hover_color="red",
-                                          command=lambda: delete_log(log_name, left_frame, LOGS_PATH, key))
+                                          command=lambda: delete_log(log_name,
+                                                                     left_frame,
+                                                                     LOGS_PATH, key))
             delete_button.grid(row=0, column=0, pady=2)
 
             visualize_button = ctk.CTkButton(buttons_frame,
                                              text="Visualizza/Modifica",
                                              width=100, height=30, hover_color="green",
-                                             command=lambda: visualize_log(log_name, decrypted_log_content, left_frame))
+                                             command=lambda: visualize_log(log_name,
+                                                                           decrypted_log_content,
+                                                                           left_frame))
             visualize_button.grid(row=0, column=1, pady=2)
-    
-    
-    except Exception as e:
-        pass
-        #print(e)
-        #error = str(e)
-        #messagebox.showwarning("Errore", "Errore durante la visualizzazione dei log.\nMotivo"+error)
 
+
+    except Exception as e:
+        print(e)
 
 
 def delete_log(log, left_frame, LOGS_PATH, key):
@@ -140,11 +140,15 @@ def delete_log(log, left_frame, LOGS_PATH, key):
 
 def update_log(log, visualize_text, visualize_frame, left_frame):
     """Funzione che aggiorna un log"""
+
     encrypted_data = encrypt_data(visualize_text.get("1.0", ctk.END), key)
+
     with open(f"{LOGS_PATH}/{log}", "wb") as file:
         file.write(encrypted_data)
+
     visualize_frame.destroy()
     refresh_logs(load_logs(LOGS_PATH, key), left_frame, LOGS_PATH, key)
+
     messagebox.showinfo("","Pagina salvata con successo!")
 
 
@@ -175,7 +179,7 @@ def load_logs(LOGS_PATH, key):
         return {}
     except InvalidToken:
         return {}
-        
+
 
 def calculate_quality(satisfaction_level,
                       mood_level,
@@ -250,8 +254,8 @@ def create_main_frame(root):
                                 font=("Helvetica", 14),
                                 show="*")
     password_entry.pack(side="top", pady=5)
-    
-    
+
+
     version_label = ctk.CTkLabel(main_frame,
                                  text=f"Versione {VERSION}",
                                  font=("Helvetica", 12))
@@ -261,7 +265,10 @@ def create_main_frame(root):
     btn_continue = ctk.CTkButton(main_frame,
                                  width=250, height=50, text_color="white",
                                  text="Go to your MaiDiary",
-                                 command=lambda: show_diary_page(root, main_frame, user_entry, password_entry))
+                                 command=lambda: show_diary_page(root,
+                                                                 main_frame,
+                                                                 user_entry,
+                                                                 password_entry))
     btn_continue.configure(font=("Helvetica", 20))
     btn_continue.pack(side="top", pady=10)
 
@@ -293,7 +300,7 @@ def main(root, Test):
 
 def show_diary_page(root, main_frame, user_entry, password_entry):
     """Funzione che mostra la pagina di inserimento del diario"""
-    
+
     global LOGS_PATH
     global key
     username = user_entry.get()
@@ -301,21 +308,21 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
     LOGS_PATH  = f"users/{username}_diary"
     salt = username.encode()
     key = generate_key(password, salt)
-    
+
     #controllo se i campi sono vuoti
     if username == "" or password == "":
         messagebox.showwarning("Errore", "È necessario compilare tutti i campi!")
         return
-    
+
     if not os.path.exists(f"users/{username}_diary"):
         #chiedere se si vuole creare un nuovo utente
         if messagebox.askyesno("Nuovo utente", "Utente non trovato.\nVuoi crearne uno nuovo?"):
             os.makedirs(f"users/{username}_diary")
         else:
             return
-    
+
     logs = load_logs(LOGS_PATH, key)
-    
+
     if logs == {}:
         messagebox.showwarning("Errore", "Password o username errati!")
         return
