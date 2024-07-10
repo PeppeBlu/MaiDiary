@@ -33,7 +33,7 @@ jobs:
               
     - name: Lint with pylint
       run: |
-        pylint maidiary.py --exit-zero
+        pylint maidiary/maidiary.py --exit-zero
 
     - name: Test with coverage and pytest
       run: |
