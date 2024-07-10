@@ -37,11 +37,18 @@ jobs:
 
     - name: Test with coverage and pytest
       run: |
-        echo "\n\n\nRunning tests\n\n"
+        echo ""
+        echo ""
+        echo "Running tests"
         coverage run -m pytest
-        echo "\n\n\nCoverage report:\n\n"
+        echo ""
+        echo ""
+        echo ""
+        echo "Coverage report:"
+        echo ""
         coverage report -m
-        echo "\n\n"
+        echo ""
+        echo ""
         coverage html
         
 
