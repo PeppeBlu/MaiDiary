@@ -37,10 +37,10 @@ class TestShowDiaryPage(unittest.TestCase):
         MockCTkLabel.return_value = MagicMock()
         MockCTkSlider.return_value = MagicMock()
 
+
         if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
             os.system('Xvfb :1 -screen 0 1600x1200x16  &')
             os.environ["DISPLAY"] = ":1.0"
-
         root = ctk.CTk()
         main_frame = ctk.CTkFrame(root)
 
