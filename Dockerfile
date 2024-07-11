@@ -13,4 +13,4 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Comando per eseguire l'applicazione
-CMD ["python", "maidiary.py"]
+CMD ["python", "maidiary/maidiary.py"]

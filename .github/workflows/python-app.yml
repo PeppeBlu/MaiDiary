@@ -38,19 +38,10 @@ jobs:
     - name: Test with coverage and pytest
       run: |
         
-        echo ""
-        echo ""
         echo "Running tests"
-        echo ""
         coverage run -m pytest
-        echo ""
-        echo ""
-        echo ""
         echo "Coverage report:"
-        echo ""
         coverage report -m
-        echo ""
-        echo ""
         coverage html
         
 
@@ -74,5 +65,3 @@ jobs:
 
     - name: Image Digest
       run: echo ${{ steps.docker_build.outputs.digest }}
-
-        
