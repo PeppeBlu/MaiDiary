@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from unittest.mock import patch, MagicMock
 from pathlib import Path
-from maidiary.maidiary import delete_log, save_log, generate_key, decrypt_data, encrypt_data
+from src.maidiary import delete_log, save_log, generate_key, decrypt_data, encrypt_data
 
 
 class TestSaveAndDeleteLog(unittest.TestCase):

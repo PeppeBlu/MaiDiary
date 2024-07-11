@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 import tempfile
 import unittest
-from maidiary.maidiary import save_log
+from src.maidiary import save_log
 
 
 class TestSaveLog(unittest.TestCase):
@@ -19,9 +19,9 @@ class TestSaveLog(unittest.TestCase):
         self.LOGS_PATH.mkdir(parents=True, exist_ok=True)
         self.data = "secret test data"
 
-    @patch('maidiary.maidiary.generate_key')
-    @patch('maidiary.maidiary.encrypt_data')
-    @patch('maidiary.maidiary.decrypt_data')
+    @patch('src.maidiary.generate_key')
+    @patch('src.maidiary.encrypt_data')
+    @patch('src.maidiary.decrypt_data')
     def test_save_log(self, mock_decrypt_data, mock_encrypt_data, mock_generate_key):
         # Configura i mock
         mock_generate_key.return_value = self.key

@@ -3,7 +3,7 @@ import os
 import tkinter as tk
 import customtkinter as ctk
 from unittest.mock import patch, MagicMock
-from maidiary.maidiary import main, show_diary_page
+from src.maidiary import main, show_diary_page
 
 
 class TestMain(unittest.TestCase):
@@ -22,17 +22,17 @@ class TestMain(unittest.TestCase):
 
     
     
-    @patch('maidiary.maidiary.messagebox')
-    @patch('maidiary.maidiary.os.path.exists')
-    @patch('maidiary.maidiary.load_logs')
-    @patch('maidiary.maidiary.generate_key')
-    @patch('maidiary.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.ctk.CTkLabel', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.ctk.CTkSlider', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.tk.PhotoImage', side_effect=mock_photoimage)
-    @patch('maidiary.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.create_main_frame', side_effect=create_mock_widget)
+    @patch('src.maidiary.messagebox')
+    @patch('src.maidiary.os.path.exists')
+    @patch('src.maidiary.load_logs')
+    @patch('src.maidiary.generate_key')
+    @patch('src.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkLabel', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkSlider', side_effect=create_mock_widget)
+    @patch('src.maidiary.tk.PhotoImage', side_effect=mock_photoimage)
+    @patch('src.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
+    @patch('src.maidiary.create_main_frame', side_effect=create_mock_widget)
     def test_main(self, MockCTkFrame,  MockPhotoImage, MockCreateMainFrame,
                   mock_generate_key, mock_load_logs, mock_path_exists, mock_messagebox,
                   MockCTkSlider, MockCTkLabel, MockCTkButton, MockCTkTextbox):

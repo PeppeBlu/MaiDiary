@@ -95,6 +95,13 @@ def refresh_logs(logs, left_frame, LOGS_PATH, key):
                                      fg_color="#D3E3F9")
             log_frame.pack(side="top", expand=True, fill="both", padx=2, pady=5)
 
+            def make_delete_wrapper(log_name):
+                return lambda: delete_log(log_name, left_frame, LOGS_PATH, key)
+            
+            def make_visualize_wrapper(log_name, cont):
+                return lambda: visualize_log(log_name, cont, left_frame)
+            
+            
             buttons_frame = ctk.CTkFrame(left_frame,
                                          corner_radius=20,
                                          fg_color="#D3E3F9")
@@ -112,17 +119,13 @@ def refresh_logs(logs, left_frame, LOGS_PATH, key):
             delete_button = ctk.CTkButton(buttons_frame,
                                           text="Cancella",
                                           width=100, height=30, hover_color="red",
-                                          command=lambda: delete_log(log_name,
-                                                                     left_frame,
-                                                                     LOGS_PATH, key))
+                                          command=make_delete_wrapper(log_name))
             delete_button.grid(row=0, column=0, pady=2)
 
             visualize_button = ctk.CTkButton(buttons_frame,
                                              text="Visualizza/Modifica",
                                              width=100, height=30, hover_color="green",
-                                             command=lambda: visualize_log(log_name,
-                                                                           decrypted_log_content,
-                                                                           left_frame))
+                                             command=make_visualize_wrapper(log_name, decrypted_log_content))
             visualize_button.grid(row=0, column=1, pady=2)
 
 

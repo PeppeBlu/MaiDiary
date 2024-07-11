@@ -2,7 +2,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from maidiary.maidiary import load_logs
+from src.maidiary import load_logs
 
 
 class TestLoadLogs(unittest.TestCase):
@@ -28,8 +28,8 @@ class TestLoadLogs(unittest.TestCase):
         with open(self.file2, "wb") as file:
             file.write(self.data2)
 
-    @patch('maidiary.maidiary.generate_key')
-    @patch('maidiary.maidiary.decrypt_data')
+    @patch('src.maidiary.generate_key')
+    @patch('src.maidiary.decrypt_data')
     def test_load_logs(self, mock_decrypt_data, mock_generate_key):
         
         mock_generate_key.return_value = self.key

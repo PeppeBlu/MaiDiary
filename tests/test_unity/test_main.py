@@ -3,7 +3,7 @@ import os
 import tkinter as tk
 import customtkinter as ctk
 from unittest.mock import patch, MagicMock
-from maidiary.maidiary import main
+from src.maidiary import main
 
 
 class TestMain(unittest.TestCase):
@@ -20,9 +20,9 @@ class TestMain(unittest.TestCase):
         mock_photo = MagicMock()
         return mock_photo
 
-    @patch('maidiary.maidiary.tk.PhotoImage', side_effect=mock_photoimage)
-    @patch('maidiary.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.create_main_frame', side_effect=create_mock_widget)
+    @patch('src.maidiary.tk.PhotoImage', side_effect=mock_photoimage)
+    @patch('src.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
+    @patch('src.maidiary.create_main_frame', side_effect=create_mock_widget)
     def test_main(self, MockCTkFrame,  MockPhotoImage, MockCreateMainFrame):
 
         logo = tk.PhotoImage()

@@ -1,6 +1,6 @@
 from hypothesis import given, settings, strategies as st
 import unittest
-from maidiary.maidiary import calculate_quality
+from src.maidiary import calculate_quality
 
 
 class TestCalculateQuality(unittest.TestCase):

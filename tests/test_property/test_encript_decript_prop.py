@@ -1,6 +1,6 @@
 from hypothesis import given, settings, strategies as st
 import unittest
-from maidiary.maidiary import generate_key, encrypt_data, decrypt_data, calculate_quality
+from src.maidiary import generate_key, encrypt_data, decrypt_data, calculate_quality
 
 # Strategia per generare stringhe binarie
 encoded_text_strategy = st.text().map(lambda x: x.encode())

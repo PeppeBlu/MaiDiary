@@ -2,7 +2,7 @@ import unittest
 import os
 import customtkinter as ctk
 from unittest.mock import patch, MagicMock
-from maidiary.maidiary import  refresh_logs
+from src.maidiary import  refresh_logs
 
 
 class TestRefreshLogs(unittest.TestCase):
@@ -16,9 +16,9 @@ class TestRefreshLogs(unittest.TestCase):
         return mock_widget
 
 
-    @patch('maidiary.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
     def test_refresh_logs(self, MockCTkFrame, MockCTkTextbox, MockCTkButton):
         # Simulazione dei log
         logs = {

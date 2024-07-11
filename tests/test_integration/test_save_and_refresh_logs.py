@@ -5,7 +5,7 @@ import customtkinter as ctk
 
 from unittest.mock import patch, MagicMock
 from pathlib import Path
-from maidiary.maidiary import save_log, refresh_logs, generate_key, decrypt_data
+from src.maidiary import save_log, refresh_logs, generate_key, decrypt_data
 
 
 
@@ -55,9 +55,9 @@ class TestSaveAndRefreshLogs(unittest.TestCase):
 
 
     
-    @patch('maidiary.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
-    @patch('maidiary.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
     def test_refresh_logs(self, MockCTkFrame, MockCTkTextbox, MockCTkButton):
         
         logs = {

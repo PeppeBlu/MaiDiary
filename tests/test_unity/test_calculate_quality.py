@@ -1,10 +1,10 @@
 import unittest
-from maidiary.maidiary import calculate_quality
+from src.maidiary import calculate_quality
 
 class TestCalculateQuality(unittest.TestCase):
 
     def test_calculate_quality_max(self):
-        from maidiary.maidiary import calculate_quality
+        from src.maidiary import calculate_quality
         quality = calculate_quality(10, 10, 10, 10, 10)
         self.assertEqual(quality, 10)
 

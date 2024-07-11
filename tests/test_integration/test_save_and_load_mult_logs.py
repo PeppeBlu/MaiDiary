@@ -2,7 +2,7 @@ import tempfile
 import unittest
 import os
 import datetime
-from maidiary.maidiary import generate_key, encrypt_data, load_logs
+from src.maidiary import generate_key, encrypt_data, load_logs
 
 
 class TestSaveAndLoadLog(unittest.TestCase):

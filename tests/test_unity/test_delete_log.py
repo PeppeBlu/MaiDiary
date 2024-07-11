@@ -2,7 +2,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock
-from maidiary.maidiary import delete_log
+from src.maidiary import delete_log
 
 
 class TestDeleteLog(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestDeleteLog(unittest.TestCase):
             file.write(self.data)
  
     @patch("tkinter.messagebox.askyesno")
-    @patch("maidiary.maidiary.decrypt_data")  # Mockiamo la funzione di decriptazione
+    @patch("src.maidiary.decrypt_data")  # Mockiamo la funzione di decriptazione
     def test_delete_log(self, mock_decrypt_data, mock_messagebox):
         mock_messagebox.return_value = True
         left_frame = MagicMock()

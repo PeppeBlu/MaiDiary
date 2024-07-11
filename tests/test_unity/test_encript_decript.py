@@ -1,6 +1,6 @@
 import unittest
 from cryptography.fernet import InvalidToken
-from maidiary.maidiary import encrypt_data, decrypt_data, generate_key
+from src.maidiary import encrypt_data, decrypt_data, generate_key
 
 
 class TestEncryptionDecryptionFunctions(unittest.TestCase):
