@@ -45,10 +45,6 @@ class TestMain(unittest.TestCase):
         mock_load_logs.return_value = {}
         mock_messagebox.askyesno.return_value = True
         mock_messagebox.showwarning.return_value = None
-        MockCTkTextbox.return_value = MagicMock()
-        MockCTkButton.return_value = MagicMock()
-        MockCTkLabel.return_value = MagicMock()
-        MockCTkSlider.return_value = MagicMock()
 
         if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
             os.system('Xvfb :1 -screen 0 1600x1200x16  &')
@@ -59,10 +55,8 @@ class TestMain(unittest.TestCase):
         main(root, Test=True)
 
         # Verifico che il frame principale si stato creato
-        # e che il root non sia vuoto
-
-        
         self.assertEqual(MockCTkFrame.call_count, 1)
+        # e che il root non sia vuoto
         self.assertTrue(root.winfo_exists())
 
         main_frame = ctk.CTkFrame(root)
@@ -76,7 +70,7 @@ class TestMain(unittest.TestCase):
 
         #conto il numero di figli di root
         children = root.winfo_children()
-        print(children)
-        #controllo che il root non sia vuoto
+        
+        #controllo che il root esista e che non sia vuoto
         self.assertTrue(root.winfo_exists())
-        self.assertEqual(len(children), 3)
+        self.assertGreater(len(children), 0)

@@ -20,22 +20,18 @@ class TestSaveAndDeleteLog(unittest.TestCase):
 
     @patch("tkinter.messagebox.askyesno")
     def test_save_and_delete_log(self, mock_messagebox):
-        # Configura i mock
+    
         mock_messagebox.return_value = True
-
-        # Percorso previsto per il file di log
         expected_log_path = self.LOGS_PATH / "log_file.txt"
 
         # Assicura che il file di log non esista prima del salvataggio
         self.assertFalse(expected_log_path.exists())
 
-        # Salva il log
         saved_log_path = save_log(self.data, self.key, str(self.LOGS_PATH))
 
         # Verifica che il file di log esista dopo il salvataggio
         self.assertTrue(Path(saved_log_path).exists())
 
-        # Apre il file di log e verifica che i dati siano corretti
         with open(saved_log_path, "rb") as file:
             read_data = file.read()
 

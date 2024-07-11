@@ -517,7 +517,7 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
 
         else:
             messagebox.showwarning("Errore", "Il testo del diario non può essere vuoto.")
-        print("fine della funzione show_diary_page")
+        
 
 
 if __name__ == "__main__":

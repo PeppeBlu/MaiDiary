@@ -1,12 +1,11 @@
 from hypothesis import given, settings, strategies as st
-
 import unittest
-from maidiary.maidiary import generate_key, encrypt_data, decrypt_data
+from maidiary.maidiary import generate_key, encrypt_data, decrypt_data, calculate_quality
 
 # Strategia per generare stringhe binarie
 encoded_text_strategy = st.text().map(lambda x: x.encode())
 
-class TestMaidiaryProperty(unittest.TestCase):
+class TestEncriptionDecriptionProperty(unittest.TestCase):
     
     @given(st.text(), encoded_text_strategy, st.text())
     @settings(max_examples=5)
@@ -16,6 +15,7 @@ class TestMaidiaryProperty(unittest.TestCase):
         decrypted_data = decrypt_data(encrypted_data, key)
         self.assertEqual(data, decrypted_data)
 
-# Esegui i test
+
+
 if __name__ == '__main__':
     unittest.main()

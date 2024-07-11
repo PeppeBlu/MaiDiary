@@ -11,6 +11,7 @@ class TestCalculateQuality(unittest.TestCase):
     def test_calculate_quality_not_max(self):
         quality = calculate_quality(7, 4, 9, 8, 10)
         self.assertNotEqual(quality, 10)
+        self.assertEqual(quality, 6.9)
 
     def test_calculate_quality_min(self):
         quality = calculate_quality(0, 0, 0, 0, 0)

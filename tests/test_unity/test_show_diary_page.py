@@ -32,12 +32,7 @@ class TestShowDiaryPage(unittest.TestCase):
         mock_load_logs.return_value = {}
         mock_messagebox.askyesno.return_value = True
         mock_messagebox.showwarning.return_value = None
-        MockCTkTextbox.return_value = MagicMock()
-        MockCTkButton.return_value = MagicMock()
-        MockCTkLabel.return_value = MagicMock()
-        MockCTkSlider.return_value = MagicMock()
-
-
+        
         if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
             os.system('Xvfb :1 -screen 0 1600x1200x16  &')
             os.environ["DISPLAY"] = ":1.0"
@@ -56,8 +51,12 @@ class TestShowDiaryPage(unittest.TestCase):
 
         children = root.winfo_children()
         
-        #root ha 4 figli: 2 Lables e 2 Frames (assegnati dalla show_diary_page)
+        #root ha 4 figli: 2 Entry e 2 Frames (assegnati dalla show_diary_page)
         self.assertEqual(len(children), 4)
+        self.assertEqual(MockCTkButton.call_count, 1)
+        self.assertGreaterEqual(MockCTkLabel.call_count, 1)
+        self.assertGreaterEqual(MockCTkSlider.call_count, 1)
+
 
 
 if __name__ == '__main__':

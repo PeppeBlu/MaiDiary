@@ -40,7 +40,6 @@ class TestSaveAndLoadLog(unittest.TestCase):
         with open(log_path1, "wb") as file:
             file.write(encrypted_data1)
 
-        # Attendi per garantire un timestamp univoco
         os.system("sleep 1")
 
         # Secondo log
