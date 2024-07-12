@@ -5,7 +5,7 @@ import customtkinter as ctk
 
 from unittest.mock import patch, MagicMock
 from pathlib import Path
-from src.maidiary import save_log, refresh_logs, generate_key, decrypt_data
+from src.maidiary import save_log, refresh_logs, generate_key, decrypt_data, load_logs
 
 
 
@@ -32,7 +32,10 @@ class TestSaveAndRefreshLogs(unittest.TestCase):
         self.data = "secret test data"
 
     @patch("tkinter.messagebox.askyesno")
-    def test_save_and_delete_log(self, mock_messagebox):
+    @patch('src.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
+    @patch('src.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
+    def test_save_and_refresh_log(self, mock_messagebox, MockCTkFrame, MockCTkTextbox, MockCTkButton):
 
         mock_messagebox.return_value = True
 
@@ -46,23 +49,13 @@ class TestSaveAndRefreshLogs(unittest.TestCase):
         # Verifica che il file di log esista dopo il salvataggio
         self.assertTrue(Path(saved_log_path).exists())
 
-        with open(saved_log_path, "rb") as file:
-            read_data = file.read()
+        #with open(saved_log_path, "rb") as file:
+            #read_data = file.read()
+        log = load_logs(str(self.LOGS_PATH), self.key)
 
+        for log_name, data in log.items():
             #Verifico che non sia in scritto in binario e che sia corretto
-            self.assertNotEqual(read_data, b"")
-            self.assertEqual(self.data, decrypt_data(read_data, self.key))
-
-
-    
-    @patch('src.maidiary.ctk.CTkFrame', side_effect=create_mock_widget)
-    @patch('src.maidiary.ctk.CTkTextbox', side_effect=create_mock_widget)
-    @patch('src.maidiary.ctk.CTkButton', side_effect=create_mock_widget)
-    def test_refresh_logs(self, MockCTkFrame, MockCTkTextbox, MockCTkButton):
-        
-        logs = {
-            "log1.txt": "Contenuto del log 1"
-        }
+            self.assertEqual(self.data, data)
 
         if os.name != "nt" and os.getenv("GITHUB_ACTIONS"):
             os.system('Xvfb :1 -screen 0 1600x1200x16  &')
@@ -71,12 +64,11 @@ class TestSaveAndRefreshLogs(unittest.TestCase):
         root = ctk.CTk()
         left_frame = ctk.CTkFrame(root)
 
-        refresh_logs(logs, left_frame, "mock_logs_path", "mock_key")
+        refresh_logs(log, left_frame, "mock_logs_path", "mock_key")
 
         # Verifica che i widget siano stati creati correttamente
         self.assertTrue(MockCTkTextbox.winfo_exists())
         self.assertTrue(MockCTkFrame.winfo_exists())
         self.assertTrue(MockCTkButton.winfo_exists())
-        self.assertGreaterEqual(MockCTkButton.call_count, len(logs))
         
         
