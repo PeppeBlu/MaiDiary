@@ -4,29 +4,16 @@ FROM python
 # Imposta il working directory
 WORKDIR /MaiDiary
 
-# Copia il file requirements.txt e installa le dipendenze
-COPY requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-RUN apt-get update
-RUN apt-get install -y x11vnc xvfb fluxbox supervisor
-
-
-# Configura il display
-ENV DISPLAY=:99
-
-# Avvia un server X virtuale in background
-RUN Xvfb :99 -screen 0 1024x768x16 &
-
-
-# Copia il contenuto della directory corrente nella working directory
+# Copia la directory nella workdir  
 COPY . .
 
-# Aggiungi il file di configurazione di supervisord
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# installa le dipendenze
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -y libx11-6 \
+    libxext-dev libxrender-dev fonts-dejavu\
+    libxinerama-dev libxi-dev libxrandr-dev \
+    libxcursor-dev libxtst-dev tk-dev
 
 # Comando per eseguire l'applicazione
-#CMD ["python", "src/maidiary.py"]
-
-# Avvia supervisord
-CMD ["/usr/bin/supervisord"]
+CMD ["python", "src/maidiary.py"]

@@ -38,6 +38,8 @@ class TestMain(unittest.TestCase):
 
         # Verifico che il frame principale si stato creato
         self.assertEqual(MockCTkFrame.call_count, 1)
+        # e che la create_main sia stata chiamata
+        self.assertEqual(MockCreateMainFrame.call_count, 1)
 
 
 if __name__ == '__main__':

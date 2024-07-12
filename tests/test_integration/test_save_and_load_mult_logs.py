@@ -5,7 +5,7 @@ import datetime
 from src.maidiary import generate_key, encrypt_data, load_logs
 
 
-class TestSaveAndLoadLog(unittest.TestCase):
+class TestSaveAndLoadMultipleLog(unittest.TestCase):
 
     def setUp(self):
         self.username = "test_user"

@@ -228,8 +228,9 @@ def create_main_frame(root):
     main_frame.pack(side="top", expand=True, fill="both", pady=10, padx=10)
 
     #Logo al programma
-    logo_label = tk.Label(main_frame, image=root.logo_image)
-    logo_label.pack(side="top", pady=10)
+    if(os.path.exists("MaiDiary_Logo.png")):
+        logo_label = tk.Label(main_frame, image=root.logo_image)
+        logo_label.pack(side="top", pady=10)
 
     # Etichetta di benvenuto stampata a capo
     welcome_label = ctk.CTkLabel(main_frame,
@@ -289,7 +290,8 @@ def main(root, Test):
     root.geometry("800x600")
     root.resizable(width=True, height=True)
 
-    root.logo_image = tk.PhotoImage(file="MaiDiary_Logo.png")
+    if(os.path.exists("MaiDiary_Logo.png")):
+        root.logo_image = tk.PhotoImage(file="MaiDiary_Logo.png")
 
     # Configurazione del frame principale
     main_frame = create_main_frame(root)
@@ -319,16 +321,12 @@ def show_diary_page(root, main_frame, user_entry, password_entry):
 
     if not os.path.exists(f"users/{username}_diary"):
         #chiedere se si vuole creare un nuovo utente
-        if messagebox.askyesno("Nuovo utente", "Utente non trovato.\nVuoi crearne uno nuovo?"):
+        if messagebox.askyesno("Utente non trovato", "Assicurati di aver inserito i dati correttamente.\nVuoi crearne uno nuovo?"):
             os.makedirs(f"users/{username}_diary")
         else:
             return
 
     logs = load_logs(LOGS_PATH, key)
-
-    if logs == {}:
-        messagebox.showwarning("Errore", "Password o username errati!")
-        return
 
     if(main_frame.winfo_exists()):
         main_frame.destroy()
